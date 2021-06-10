@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+#
+# Print a "parrot wave" to stdout and copy it to the clipboard.
+#
+function parrotwave () {
+  local n="${1:-7}"
+  local p=""
+  for i in $(seq 1 "$n"); do
+    p+=":parrotwave$i:"
+  done
+  echo "$p"
+  echo "$p" | pbcopy
+}
+parrotwave "$@"

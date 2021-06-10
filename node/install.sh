@@ -12,7 +12,7 @@ then
   # Install the correct homebrew for each OS type
   if test "$(uname)" = "Darwin"
   then
-    ruby -e "$(curl -L git.io/n-install | zsh)"
+    ruby -e "$(curl -L git.io/n-install | bash)"
   fi
 
   echo "- n installation complete..."

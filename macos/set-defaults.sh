@@ -272,4 +272,7 @@ defaults -currentHost write com.apple.ImageCapture disableHotPlug -bool true
 defaults write com.google.Chrome PMPrintingExpandedStateForPrint2 -bool true
 defaults write com.google.Chrome.canary PMPrintingExpandedStateForPrint2 -bool true
 
+# Fix Robo 3T dark mode issue
+defaults write com.3tsoftwarelabs.robo3t NSRequiresAquaSystemAppearance -bool yes
+
 echo "- MacOS defaults complete..."
