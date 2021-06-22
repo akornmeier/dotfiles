@@ -53,7 +53,7 @@ brew update
 
 # Upgrade any already-installed formlae
 echo "› brew upgrade"
-brew upgrade
+brew upgrade --cask
 
 # Install software
 echo "› $DOTFILES/script/install"

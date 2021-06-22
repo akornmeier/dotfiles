@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+#
+# Print a "disapprove" face to stdout and copy it to the clipboard.
+#
+function disapprove () {
+  local p="ಠ_ಠ"
+  echo "$p"
+  echo "$p" | pbcopy
+}
+disapprove "$@"
