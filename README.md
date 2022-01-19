@@ -53,7 +53,5 @@ this script in `bin/`.
 
 ## programs to install from Apple App Store
 
-- NordVPN
-- Pixelmator
+- Magnet
 - Spark Email Client
-- Todoist

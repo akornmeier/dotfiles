@@ -7,12 +7,13 @@ echo "Creating a zgen save"
 
     # prezto and modules
     zgen prezto
-    zgen prezto git
+    # zgen prezto git
     zgen prezto utility
+    zgen prezto completion
     zgen prezto autosuggestions
+    zgen prezto spectrum
     zgen prezto syntax-highlighting
     zgen prezto history-substring-search
-    zgen prezto spectrum
     zgen prezto prompt
 
     zgen load djui/alias-tips
