@@ -1,3 +1,4 @@
 git/env.zsh
 git/gitconfig.local.symlink
 git/gitconfig.symlink
+Brewfile.lock.json

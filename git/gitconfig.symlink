@@ -36,19 +36,24 @@
 [user]
 	name = Tony Kornmeier
 	email = akornmeier@users.noreply.github.com
+        signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIErTkjdY7/ICA7F3R1AeLFkSv9Nd7mNeGqxPC8Tt+ENV
+[gpg]
+        format = ssh
+[gpg "ssh"]
+        program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
+[commit]
+        gpgsign = true
 [pager]
         diff = delta
         log = delta
         reflog = delta
         show = delta
-
 [delta]
         plus-style = "syntax #012800"
         minus-style = "syntax #340001"
         syntax-theme = Dracula
         navigate = true
         side-by-side = true
-
 [interactive]
         diffFilter = delta --color-only
 [filter "lfs"]
@@ -56,3 +61,5 @@
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
+[init]
+	defaultBranch = main

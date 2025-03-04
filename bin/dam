@@ -1,0 +1,9 @@
+#!/bin/sh
+#
+# dam
+#
+# `dam` Deletes all merged branches locally and remotely
+
+echo "Deleting all merged local and remote branches"
+git checkout main && git fetch --prune && git branch --merged | egrep -v '(\*|main)' | xargs -n 1 git branch -d
+git remote prune origin

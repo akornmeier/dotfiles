@@ -135,6 +135,8 @@ install_dotfiles () {
     dst="$HOME/.$(basename "${src%.*}")"
     link_file "$src" "$dst"
   done
+
+  success 'dotfiles installed'
 }
 
 setup_gitconfig
@@ -153,4 +155,4 @@ then
 fi
 
 echo ''
-echo '  All installed!'
+success 'All installed!'

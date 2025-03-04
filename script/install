@@ -8,9 +8,12 @@ set -e
 
 cd "$(dirname $0)"/..
 
+echo "› Becoming self-aware..."
+
 # Run Homebrew through the Brewfile
-echo "› brew bundle"
+echo "› Install brew bundle..."
 brew bundle
 
 # find the installers and run them iteratively
+echo "› Running installer scripts..."
 find . -name install.sh | while read installer ; do sh -c "${installer}" ; done

@@ -59,6 +59,10 @@ brew upgrade --cask
 echo "› $DOTFILES/script/install"
 $DOTFILES/script/install
 
+# Copy Hyper config to default location
+echo "› sync Hyper config"
+cp $DOTFILES/hyper/.hyper.js $HOME/.hyper.js
+
 # Remove outdated versions from the cellar
 echo "› brew cleanup"
 brew cleanup
