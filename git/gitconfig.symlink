@@ -4,9 +4,6 @@
 [hub]
         protocol = https
 [alias]
-        co = checkout
-        wtf     = !$DOTFILES/bin/git-wtf
-        rank-contributors = !$DOTFILES/bin/git-rank-contributors
         count   = !git shortlog -sn
 	grog = log --graph --abbrev-commit --decorate --all --format=format:\"%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(dim white) - %an%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n %C(white)%s%C(reset)\"
 [color]
@@ -36,7 +33,7 @@
 [user]
 	name = Tony Kornmeier
 	email = akornmeier@users.noreply.github.com
-        signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIErTkjdY7/ICA7F3R1AeLFkSv9Nd7mNeGqxPC8Tt+ENV
+        signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHQsyymgxlaMgbAl6cHThMiYuN7ncC9CrmzKnDRu3gav
 [gpg]
         format = ssh
 [gpg "ssh"]
