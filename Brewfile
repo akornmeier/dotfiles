@@ -29,7 +29,11 @@ brew 'readline' # Library for command-line editing
 brew 'redis' # Persistent key-value database, with built-in net interface
 brew 'starship' # Cross-shell prompt for astronauts
 brew 'wget' # Internet file retriever
+brew 'zsh-autocomplete' # Zsh plugin that adds tab completion for common commands
 brew 'zsh-autosuggestions' # FISH-like autosuggestions for ZSH
+brew 'zsh-completions' # Additional completion definitions for Zsh
+brew 'zsh-history-substring-search' # Zsh port of Fish history search
+brew 'zsh-you-should-use' # Zsh plugin that reminds you to use existing aliases
 brew 'zsh-syntax-highlighting' # Terminal bliss
 brew 'zsh' # UNIX shell (command interpreter)
 
@@ -38,6 +42,7 @@ cask 'charles'
 cask 'discord'
 cask 'dropbox'
 cask 'firefox'
+cask 'font-fira-code-nerd-font'
 cask 'google-chrome'
 cask 'hyper'
 cask 'insomnia'
