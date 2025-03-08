@@ -1,6 +1,6 @@
 # Standard Shell
 alias l='ls -l'
-alias reload='source "$HOME/.zshrc"'
+alias reload='source ~/.zshrc'
 
 # Flush DNS Cache
 alias dnsflush='dscacheutil -flushcache; sudo killall -HUP mDNSResponder'
