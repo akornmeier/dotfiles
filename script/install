@@ -12,7 +12,7 @@ echo "› Becoming self-aware..."
 
 # Run Homebrew through the Brewfile
 echo "› Install brew bundle..."
-brew bundle
+brew bundle install
 
 # find the installers and run them iteratively
 echo "› Running installer scripts..."

@@ -2,7 +2,7 @@
 [include]
         path = ~/.gitconfig.local
 [hub]
-        protocol = https
+        protocol = ssh
 [alias]
         count   = !git shortlog -sn
 	grog = log --graph --abbrev-commit --decorate --all --format=format:\"%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(dim white) - %an%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n %C(white)%s%C(reset)\"
@@ -28,12 +28,10 @@
         #
         # Setting to git 2.0 default to suppress warning message
         default = simple
-[credential]
-	helper = osxkeychain
 [user]
 	name = Tony Kornmeier
 	email = akornmeier@users.noreply.github.com
-	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHQsyymgxlaMgbAl6cHThMiYuN7ncC9CrmzKnDRu3gav
+	signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICKn+EXhdQZhcdTMuQw5Maxe59WBjYIvD473K5ANbO9p
 [gpg]
         format = ssh
 [gpg "ssh"]
