@@ -36,24 +36,33 @@ brew 'zsh-you-should-use' # Zsh plugin that reminds you to use existing aliases
 brew 'zsh-syntax-highlighting' # Terminal bliss
 brew 'zsh' # UNIX shell (command interpreter)
 
-cask '1password'
-cask 'charles'
-cask 'discord'
-cask 'dropbox'
-cask 'firefox'
-cask 'font-fira-code-nerd-font'
-cask 'google-chrome'
-cask 'hyper'
-cask 'insomnia'
-cask 'keybase'
-cask 'muzzle'
-cask 'nordvpn'
-cask 'qmk-toolbox'
-cask 'spotify'
-cask 'tableplus'
-cask 'todoist'
-cask 'visual-studio-code'
-cask 'vivaldi'
-cask 'warp'
-cask 'xquartz'
-cask 'zoom'
+cask '1password' # Password manager
+cask 'charles' # HTTP proxy / monitor
+cask 'discord' # VoIP and chat app
+cask 'dropbox' # File hosting service
+cask 'firefox' # Web browser
+cask 'font-fira-code-nerd-font' # Monospace font with programming ligatures
+cask 'google-chrome' # Web browser
+cask 'hyper' # Terminal emulator built on web technologies
+cask 'insomnia' # REST client
+cask 'keybase' # Encrypted messaging and file sharing
+cask 'muzzle' # Mute notifications when screen sharing
+cask 'nordvpn' # VPN service
+cask 'qmk-toolbox' # QMK firmware flashing tool
+cask 'spotify' # Music streaming service
+cask 'tableplus' # GUI for databases
+cask 'todoist' # Task manager
+cask 'visual-studio-code' # Code editor
+cask 'vivaldi' # Web browser
+cask 'warp' # Terminal built for speed and safety
+cask 'xquartz' # X11 server for macOS
+cask 'zoom' # Video conferencing software
+
+# Install mas apps
+mas 'Be Focused',  id: 973134470 # Pomodoro Focus Timer
+mas 'CopyClip',    id: 595191960 # Clipboard manager
+mas 'Dato',        id: 1470584107 # Calendar and time zone menu bar app
+mas 'Hand Mirror', id: 1502839586 # Screen mirroring app
+mas 'Keycastr',    id: 1058125028 # Keystroke visualizer
+mas 'Lungo',       id: 1263070803 # Prevents your Mac from going to sleep
+mas 'Magnet',      id: 441258766 # Window manager
