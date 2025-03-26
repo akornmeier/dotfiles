@@ -5,53 +5,71 @@ This repo contains my dotfiles. There are many others like it, but this one is m
 Forked from @Holman's dotfiles, I took his general premise and edited them to fit my own needs.
 They are split into the main areas I use (JavaScript, Node, git, system libraries, and so on), so the project is structured accordingly.
 
-## what's inside
+## What's inside
 
 A lot of stuff. Seriously, a lot of stuff. Check them out in the file browser
-above and see what components may mesh up with you.
+above and see what components may mesh with you.
 [Fork it](https://github.com/akornmeier/dotfiles/fork), remove what you don't
 use, and build on what you do use.
 
 ## components
 
-There's a few special files in the hierarchy.
+Below is the general layout of my setup. Please review this _**before**_
+running the install scripts.
 
-- **bin/**: Anything in `bin/` will get added to your `$PATH` and be made
+- **bin/**: Anything in `bin/` will be added to your `$PATH` and 
   available everywhere.
-- **Brewfile**: This is a list of applications for [Homebrew Cask](http://caskroom.io) to install: things like Chrome, Slack, hyper, 1Password and stuff. Might want to edit this file before running any initial setup.
+- **Brewfile**: Manages four types of applications:
+
+  1. Brew Tap - service level tasks
+  2. Brewfiles - apps/plugins
+  3. Cask - OS app like Chrome, Discord, Warp, and Zoom
+  4. Mas - app from Mac App Store like: Lungo, Magnet, and Be Focused
+  
+  **You'll want to edit this file before you run the initial setup**.
+  
 - **topic/\*.zsh**: Any files ending in `.zsh` get loaded into your
   environment.
 - **topic/path.zsh**: Any file named `path.zsh` is loaded first and is
-  expected to setup `$PATH` or similar.
+  expected to set up `$PATH` or similar.
 - **topic/completion.zsh**: Any file named `completion.zsh` is loaded
-  last and is expected to setup autocomplete.
+  last and is expected to set up autocomplete.
 - **topic/\*.symlink**: Any files ending in `*.symlink` get symlinked into
   your `$HOME`. This is so you can keep all of those versioned in your dotfiles
   but still keep those autoloaded files in your home directory. These get
   symlinked in when you run `script/bootstrap`.
 
-## install
+## Getting Started
+
+The main file you'll want to change right off the bat is `zsh/zshrc.symlink`,
+which sets up a few paths that'll be different on your particular machine.
 
 Run this:
 
 ```sh
+// clone (or fork) the repo
 git clone https://github.com/akornmeier/dotfiles.git ~/.dotfiles
+
+// go to the new directory
 cd ~/.dotfiles
+
+// 1. setup the pathing and config files
 script/bootstrap
+
+// 2. install os defaults and brew files
+script/install
 ```
 
 This will symlink the appropriate files in `.dotfiles` to your home directory.
 Everything is configured and tweaked within `~/.dotfiles`.
 
-The main file you'll want to change right off the bat is `zsh/zshrc.symlink`,
-which sets up a few paths that'll be different on your particular machine.
+## Updates to keep things fresh
 
-`dot` is a simple script that installs some dependencies, sets sane macOS
-defaults, and so on. Tweak this script, and occasionally run `dot` from
-time to time to keep your environment fresh and up-to-date. You can find
-this script in `bin/`.
+Run this simple command from any directory:
 
-## programs to install from Apple App Store
+```sh
+dot
+```
 
-- Magnet
-- Spark Email Client
+`dot` is a simple script that you can from from time to time to keep your 
+environment fresh and up-to-date. You can find this script in `bin/`.
