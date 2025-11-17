@@ -98,10 +98,13 @@ fi
 # Summary
 # =============================================================================
 
-echo ""
-echo "✓ Claude MCP setup complete!"
-echo ""
-echo "  MCP servers configured:"
-echo "    - sequential-thinking (via npx)"
-echo "    - serena (via uvx)"
-echo ""
+# Only show summary if at least one application was configured
+if [ "$CLAUDE_DESKTOP_INSTALLED" = true ] || [ "$CLAUDE_CODE_INSTALLED" = true ]; then
+  echo ""
+  echo "✓ Claude MCP setup complete!"
+  echo ""
+  echo "  MCP servers configured:"
+  echo "    - sequential-thinking (via npx)"
+  echo "    - serena (via uvx)"
+  echo ""
+fi
