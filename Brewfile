@@ -11,6 +11,7 @@ brew 'gcc' # the GNU Compiler
 brew 'git-delta' # syntax-highlighting pager for git and diff output
 brew 'git' # distributed revision control system
 brew 'go' # go programming language
+brew 'gpg' # GNU Privacy Guard
 brew 'grc' # colorize logfiles and command output
 brew 'fnm' # Node.js version manager and corepack installer
 # NOTE: If any formula installs node as a dependency, it will be removed by fnm/install.sh and bin/dot
@@ -25,6 +26,8 @@ brew 'postgresql', restart_service: false # SQL database (manual start: brew ser
 brew 'readline' # Library for command-line editing
 brew 'redis', restart_service: false # In-memory database (manual start: brew services start redis)
 brew 'starship' # Cross-shell prompt for astronauts
+brew 'tdd-guard' # Test-driven development guard
+brew 'uv' # Extremely fast Python package installer and resolver
 brew 'wget' # Internet file retriever
 brew 'zsh-autocomplete' # Zsh plugin that adds tab completion for common commands
 brew 'zsh-autosuggestions' # FISH-like autosuggestions for ZSH
@@ -35,10 +38,12 @@ brew 'zsh-syntax-highlighting' # Terminal bliss
 brew 'zsh' # UNIX shell (command interpreter)
 
 cask '1password' # Password manager
+cask 'claude' # AI programming friend
 cask 'claude-code' # AI programming friend
 cask 'discord' # VoIP and chat app
 cask 'firefox' # Web browser
 cask 'font-fira-code-nerd-font' # Monospace font with programming ligatures
+cask 'font-jetbrains-mono-nerd-font' # Monospace font with programming ligatures
 cask 'google-chrome' # Web browser
 cask 'ghostty' # Terminal emulator
 cask 'insomnia' # REST client
