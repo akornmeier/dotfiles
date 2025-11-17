@@ -26,6 +26,11 @@ Below is the general layout of my setup. Please review this _**before**_ running
 
   **You'll want to edit this file before you run the initial setup**.
 
+- **claude/**: Configuration for Claude Desktop and Claude Code MCP (Model Context Protocol) servers. The `install.sh` script manages:
+  - **Claude Desktop**: Symlinks MCP server config to `~/Library/Application Support/Claude/`
+  - **Claude Code**: Adds MCP servers via CLI (`sequential-thinking`, `serena`)
+  - Gracefully skips setup if Claude Desktop/Code is not installed
+  - Preserves existing user configurations
 - **topic/\*.zsh**: Any files ending in `.zsh` get loaded into your
   environment.
 - **topic/path.zsh**: Any file named `path.zsh` is loaded first and is
@@ -91,7 +96,7 @@ If you choose to continue, the installation (`dot install`) will:
 
 1. 📦 Install all packages from the Brewfile (brew, cask, and mas apps)
 2. 🔧 Set up FNM and Node.js LTS
-3. ⚙️ Run all topic-specific installers (macos, fnm, zsh)
+3. ⚙️ Run all topic-specific installers (macos, fnm, zsh, claude)
 4. 🍏 Apply macOS system defaults
 
 ### Password Prompts
@@ -105,10 +110,13 @@ On subsequent runs, if everything is already configured, you may not be prompted
 
 ### What Gets Installed
 
-- **Homebrew packages**: Command-line tools like git, fnm, starship, etc.
-- **Cask applications**: GUI apps like Chrome, Discord, Warp, Zoom
+- **Homebrew packages**: Command-line tools like git, fnm, starship, uv, etc.
+- **Cask applications**: GUI apps like Chrome, Discord, Warp, Zoom, Claude
 - **Node.js**: Latest LTS version via FNM
 - **Oh My Zsh**: If not already installed
+- **Claude MCP servers**: Model Context Protocol servers for Claude Desktop and Claude Code
+  - **sequential-thinking**: Enhanced reasoning capabilities (via npx)
+  - **serena**: Advanced code analysis and understanding (via uvx)
 - **macOS preferences**: System defaults and configurations
 
 **Note on Mac App Store Apps**: Due to compatibility issues with `mas` on macOS Sequoia (15.x), Mac App Store apps must be installed manually. The following apps are recommended but commented out in the Brewfile:
@@ -153,7 +161,8 @@ Full installation - useful after major changes or pulling updates:
 
 - 🔗 Updates all symlinks
 - 📦 Installs all Brewfile packages
-- ⚙️ Runs all topic installers (macOS, FNM, Zsh)
+- ⚙️ Runs all topic installers (macOS, FNM, Zsh, Claude)
+- 🤖 Configures Claude Desktop/Code MCP servers
 - 🍏 Applies macOS system defaults
 - 🔐 Only prompts for sudo when actually needed
 
@@ -235,3 +244,28 @@ FNM (Fast Node Manager) is used instead of nvm for better performance. Node.js b
 - Claude MCP servers
 - GUI applications that need Node.js
 - System services and LaunchAgents
+
+### Claude Desktop and MCP Servers
+
+Claude Desktop and Claude Code can be extended with MCP (Model Context Protocol) servers. The dotfiles automatically configure two powerful servers:
+
+- **sequential-thinking**: Provides enhanced reasoning and step-by-step problem solving
+- **serena**: Offers advanced code analysis and symbol-level understanding
+
+**Setup Requirements**:
+- Claude Desktop must be installed via Brewfile (`cask 'claude'`)
+- OR Claude Code must be installed (`brew install --cask claude-code`)
+- Node.js via FNM (for `npx` command)
+- `uv` via Homebrew (for `uvx` command)
+
+**Post-Installation**:
+- **Claude Desktop**: After running `dot install`, fully quit Claude (File → Exit, not just close window) and restart
+- **Claude Code**: Run `/mcp` command to authenticate MCP servers
+- Look for the hammer icon in Claude Desktop interface to verify MCP tools are loaded
+
+**Adding More MCP Servers**:
+- **Claude Desktop**: Edit `claude/claude_desktop_config.json.template` and run `./claude/install.sh`
+- **Claude Code**: Use `claude mcp add` command (see `claude mcp --help`)
+
+**Preserving Custom Configurations**:
+If you already have a Claude Desktop config file, the installer will preserve it and show a warning. To use the dotfiles config, backup your existing file and re-run the installer.

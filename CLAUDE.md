@@ -64,6 +64,7 @@ The repository is organized by "topics" (directories), where each topic contains
 - **git/**: Git configuration and aliases
 - **macos/**: macOS-specific settings and defaults
 - **fnm/**: Fast Node Manager configuration
+- **claude/**: Claude Desktop and Claude Code MCP server configuration
 - **functions/**: Reusable shell functions
 - **system/**: System-level configurations (keys, paths)
 
@@ -90,7 +91,8 @@ The main orchestration script (`bin/dot`) handles three modes:
 2. **`install`**: Full installation
    - Updates symlinks
    - Installs all Brewfile packages
-   - Runs topic installers (macos, fnm, zsh)
+   - Runs topic installers (macos, fnm, zsh, claude)
+   - Configures Claude Desktop/Code MCP servers (if installed)
    - Applies macOS system defaults
 
 3. **`update`** (default): Smart updates
@@ -138,6 +140,30 @@ FNM is preferred over Homebrew's Node:
 - `macos/install.sh`: Checks for macOS updates during installation
 - `macos/set-defaults.sh`: Applies system preferences (requires sudo)
 - Both scripts are run during `dot install`
+
+### Claude MCP Servers
+
+The `claude/` topic configures Model Context Protocol (MCP) servers for Claude Desktop and Claude Code:
+
+**For Claude Desktop:**
+- Symlinks `claude_desktop_config.json.template` to `~/Library/Application Support/Claude/`
+- Configured servers: `sequential-thinking` (npx), `serena` (uvx)
+- Preserves existing user configurations if present
+- Requires fully quitting Claude Desktop (File → Exit) and restarting after changes
+
+**For Claude Code:**
+- Automatically adds MCP servers via `claude mcp add` command
+- Same servers as Claude Desktop: `sequential-thinking`, `serena`
+- Use `/mcp` command in Claude Code to authenticate servers
+
+**Dependencies:**
+- Node.js via FNM (for `npx` command)
+- `uv` via Homebrew (for `uvx` command)
+- Gracefully skips setup if Claude Desktop/Code is not installed
+
+**Adding more servers:**
+- Edit `claude/claude_desktop_config.json.template`
+- Run `./claude/install.sh` or `dot install`
 
 ### Scripts vs Bin
 
