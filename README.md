@@ -97,8 +97,7 @@ If you choose to continue, the installation (`dot install`) will:
 1. 📦 Install all packages from the Brewfile (brew, cask, and mas apps)
 2. 🔧 Set up FNM and Node.js LTS
 3. ⚙️ Run all topic-specific installers (macos, fnm, zsh, claude)
-4. 🤖 Configure Claude Desktop/Code MCP servers (if installed)
-5. 🍏 Apply macOS system defaults
+4. 🍏 Apply macOS system defaults
 
 ### Password Prompts
 
