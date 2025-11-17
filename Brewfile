@@ -55,10 +55,6 @@ cask 'zed' # Code editor
 cask 'zoom' # Video conferencing software
 
 # Install mas apps
-# mas 'Be Focused',  id: 973134470 # Pomodoro Focus Timer
-# mas 'CopyClip',    id: 595191960 # Clipboard manager
-# mas 'Dato',        id: 1470584107 # Calendar and time zone menu bar app
-# mas 'Hand Mirror', id: 1502839586 # Screen mirroring app
 # mas 'Keycastr',    id: 1058125028 # Keystroke visualizer
-# mas 'Lungo',       id: 1263070803 # Prevents your Mac from going to sleep
-# mas 'Magnet',      id: 441258766 # Window manager
+mas 'Lungo',       id: 1263070803 # Prevents your Mac from going to sleep
+mas 'Magnet',      id: 441258766 # Window manager
