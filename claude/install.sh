@@ -71,8 +71,7 @@ if [ "$CLAUDE_CODE_INSTALLED" = true ]; then
   if claude mcp list 2>/dev/null | grep -q "sequential-thinking"; then
     echo "  ✓ sequential-thinking already configured"
   else
-    claude mcp add --scope user --transport stdio sequential-thinking -- npx -y @modelcontextprotocol/server-sequential-thinking 2>/dev/null
-    if [ $? -eq 0 ]; then
+    if claude mcp add --scope user --transport stdio sequential-thinking -- npx -y @modelcontextprotocol/server-sequential-thinking 2>/dev/null; then
       echo "  ✓ Added sequential-thinking MCP server"
     else
       echo "  ⚠️  Failed to add sequential-thinking (may already exist)"
@@ -83,8 +82,7 @@ if [ "$CLAUDE_CODE_INSTALLED" = true ]; then
   if claude mcp list 2>/dev/null | grep -q "serena"; then
     echo "  ✓ serena already configured"
   else
-    claude mcp add --scope user --transport stdio serena -- /opt/homebrew/bin/uvx --from git+https://github.com/oraios/serena serena start-mcp-server 2>/dev/null
-    if [ $? -eq 0 ]; then
+    if claude mcp add --scope user --transport stdio serena -- /opt/homebrew/bin/uvx --from git+https://github.com/oraios/serena serena start-mcp-server 2>/dev/null; then
       echo "  ✓ Added serena MCP server"
     else
       echo "  ⚠️  Failed to add serena (may already exist)"
