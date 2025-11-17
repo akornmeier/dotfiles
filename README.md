@@ -255,7 +255,7 @@ Claude Desktop and Claude Code can be extended with MCP (Model Context Protocol)
 
 **Setup Requirements**:
 - Claude Desktop must be installed via Brewfile (`cask 'claude'`)
-- OR Claude Code must be installed (`brew install claude`)
+- OR Claude Code must be installed (`brew install --cask claude-code`)
 - Node.js via FNM (for `npx` command)
 - `uv` via Homebrew (for `uvx` command)
 
