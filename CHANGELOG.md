@@ -1,5 +1,14 @@
 # tk-dotfiles
 
+## 2.1.0
+
+### Minor Changes
+
+- ea8a653: Add GitHub Actions for changeset enforcement and commitlint
+  - Add changeset-check workflow to require changesets on PRs with code changes
+  - Add commitlint workflow to enforce conventional commit messages
+  - Configure commitlint with @commitlint/config-conventional
+
 ## 2.0.0
 
 ### Major Changes
