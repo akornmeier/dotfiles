@@ -7,6 +7,7 @@ brew 'coreutils'
 brew 'findutils'
 
 brew 'ack' # a grep-like source code search tool
+brew 'act' # GitHub Actions runner
 brew 'gcc' # the GNU Compiler
 brew 'git-delta' # syntax-highlighting pager for git and diff output
 brew 'git' # distributed revision control system
