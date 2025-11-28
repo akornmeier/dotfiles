@@ -1,0 +1,67 @@
+name: Changeset Check
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  changeset-check:
+    name: Check for Changeset
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.6.5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check for Changeset
+        run: |
+          # Get list of changed files (excluding changesets directory itself)
+          CHANGED_FILES=$(git diff --name-only origin/main...HEAD | grep -v "^\.changeset/" || true)
+
+          # Check if there are code changes (not just changeset files)
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "No code changes detected (only changeset files). Skipping check."
+            exit 0
+          fi
+
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+          echo ""
+
+          # Check if a changeset exists for this PR
+          CHANGESET_FILES=$(git diff --name-only origin/main...HEAD | grep "^\.changeset/.*\.md$" | grep -v "README.md" || true)
+
+          if [ -z "$CHANGESET_FILES" ]; then
+            echo "::error::No changeset found! Please run 'pnpm changeset' to create one."
+            echo ""
+            echo "Changesets help track what changes are being made and will be included"
+            echo "in the changelog when a new version is released."
+            echo ""
+            echo "To add a changeset:"
+            echo "  1. Run: pnpm changeset"
+            echo "  2. Select the type of change (patch, minor, major)"
+            echo "  3. Write a summary of your changes"
+            echo "  4. Commit the generated changeset file"
+            exit 1
+          fi
+
+          echo "Changeset found:"
+          echo "$CHANGESET_FILES"
+          echo ""
+          echo "Changeset check passed!"
