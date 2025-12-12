@@ -41,6 +41,7 @@ brew 'zsh' # UNIX shell (command interpreter)
 cask '1password' # Password manager
 cask 'claude' # AI programming friend
 cask 'claude-code' # AI programming friend
+cask 'cursor' # Write, edit, and chat about your code with AI
 cask 'discord' # VoIP and chat app
 cask 'firefox' # Web browser
 cask 'font-fira-code-nerd-font' # Monospace font with programming ligatures

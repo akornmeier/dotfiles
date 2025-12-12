@@ -1,0 +1,59 @@
+#!/bin/bash
+set -e
+
+echo "=== gsync: Syncing with remote ==="
+
+# Fetch and prune stale remote-tracking branches
+git fetch --prune
+
+# Auto-detect default branch from remote
+default_branch=$(git remote show origin | grep 'HEAD branch' | awk '{print $NF}')
+current_branch=$(git branch --show-current)
+
+if [[ "$current_branch" == "$default_branch" ]]; then
+  git pull origin "$default_branch"
+else
+  echo "On branch '$current_branch', fetched '$default_branch' from origin"
+fi
+
+# Find and clean up local branches whose upstream is gone
+gone_branches=$(git for-each-ref --format '%(refname:short) %(upstream:track)' refs/heads | \
+  grep '\[gone\]' | awk '{print $1}' || true)
+
+if [[ -n "$gone_branches" ]]; then
+  echo ""
+  echo "Local branches with deleted remotes:"
+
+  for branch in $gone_branches; do
+    if [[ "$branch" == "$current_branch" ]]; then
+      echo "  ⚠ $branch (skipped - currently checked out)"
+      continue
+    fi
+
+    if git branch -d "$branch" 2>/dev/null; then
+      echo "  ✓ $branch (deleted)"
+    else
+      echo "  ✗ $branch has unmerged commits"
+      read -p "    Force delete? [y/N] " -n 1 -r
+      echo
+      if [[ $REPLY =~ ^[Yy]$ ]]; then
+        git branch -D "$branch"
+        echo "    ✓ Force deleted"
+      else
+        echo "    ⏭ Skipped"
+      fi
+    fi
+  done
+else
+  echo "No stale local branches to clean up"
+fi
+
+# Auto-detect pnpm project and run build/test
+if [[ -f "package.json" ]] && [[ -f "pnpm-lock.yaml" ]]; then
+  echo ""
+  echo "Detected pnpm project, running install/build/test..."
+  pnpm i && pnpm build && pnpm test
+fi
+
+echo ""
+echo "=== gsync complete ==="
