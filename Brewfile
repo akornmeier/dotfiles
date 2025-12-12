@@ -3,6 +3,7 @@ cask_args appdir: '/Applications'
 tap 'mongodb/brew'
 
 # gnu stuff
+brew 'bash' # Bash 5.x (macOS ships with 3.2)
 brew 'coreutils'
 brew 'findutils'
 
