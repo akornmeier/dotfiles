@@ -74,11 +74,13 @@ else
   echo "No stale local branches to clean up"
 fi
 
-# Auto-detect pnpm project and run build/test
+# Auto-detect pnpm project and run install/build/test (if scripts exist)
 if [[ -f "package.json" ]] && [[ -f "pnpm-lock.yaml" ]]; then
   echo ""
-  echo "Detected pnpm project, running install/build/test..."
-  pnpm i && pnpm build && pnpm test
+  echo "Detected pnpm project, running install..."
+  pnpm i
+  pnpm run --if-present build
+  pnpm run --if-present test
 fi
 
 echo ""
