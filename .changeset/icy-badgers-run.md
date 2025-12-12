@@ -2,4 +2,4 @@
 'tk-dotfiles': patch
 ---
 
-update to the gsync changes
+Transform gsync from alias to interactive branch cleanup script
