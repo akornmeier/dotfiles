@@ -27,10 +27,12 @@ Transform `gsync` from a simple alias into a standalone script that syncs with t
 2. **Detect default branch** - Query remote for HEAD branch
 3. **Pull if on default branch** - Only pulls when on the default branch
 4. **Clean stale branches:**
-   - Find branches with `[gone]` upstream tracking
-   - Skip current branch
-   - Try safe delete (`-d`) first
-   - Prompt for force delete (`-D`) on unmerged branches
+   - Compare local branches against remote branches
+   - Find local branches with no matching remote (regardless of tracking status)
+   - Skip current branch and default branch
+   - Check for unpushed commits (commits not in default branch) and warn before prompting
+   - Try safe delete (`-d`) for fully merged branches
+   - Prompt for force delete (`-D`) on branches with unpushed/unmerged commits
 5. **Project detection** - If `package.json` + `pnpm-lock.yaml` exist, run `pnpm i && pnpm build && pnpm test`
 
 ### Full Script
@@ -54,22 +56,51 @@ else
   echo "On branch '$current_branch', fetched '$default_branch' from origin"
 fi
 
-# Find and clean up local branches whose upstream is gone
-gone_branches=$(git for-each-ref --format '%(refname:short) %(upstream:track)' refs/heads | \
-  grep '\[gone\]' | awk '{print $1}' || true)
+# Find local branches with no matching remote branch
+remote_branches=$(git branch -r | grep -v HEAD | sed 's|.*/||' | sort -u)
+local_branches=$(git branch --format '%(refname:short)')
+stale_branches=""
 
-if [[ -n "$gone_branches" ]]; then
+for branch in $local_branches; do
+  # Skip protected branches (default branch already detected above)
+  if [[ "$branch" == "$default_branch" ]]; then
+    continue
+  fi
+
+  # Check if remote branch exists
+  if ! echo "$remote_branches" | grep -qx "$branch"; then
+    stale_branches="$stale_branches $branch"
+  fi
+done
+
+# Trim leading space
+stale_branches=$(echo "$stale_branches" | xargs)
+
+if [[ -n "$stale_branches" ]]; then
   echo ""
-  echo "Local branches with deleted remotes:"
+  echo "Local branches with no matching remote:"
 
-  for branch in $gone_branches; do
+  for branch in $stale_branches; do
     if [[ "$branch" == "$current_branch" ]]; then
       echo "  ⚠ $branch (skipped - currently checked out)"
       continue
     fi
 
-    if git branch -d "$branch" 2>/dev/null; then
-      echo "  ✓ $branch (deleted)"
+    # Check for unpushed commits (commits not in default branch)
+    unpushed_count=$(git log "$default_branch".."$branch" --oneline 2>/dev/null | wc -l | tr -d ' ')
+
+    if [[ "$unpushed_count" -gt 0 ]]; then
+      echo "  ⚠ $branch has $unpushed_count unpushed commit(s) not in $default_branch"
+      read -p "    Delete anyway? [y/N] " -n 1 -r
+      echo
+      if [[ $REPLY =~ ^[Yy]$ ]]; then
+        git branch -D "$branch"
+        echo "    ✓ Force deleted"
+      else
+        echo "    ⏭ Skipped"
+      fi
+    elif git branch -d "$branch" 2>/dev/null; then
+      echo "  ✓ $branch (deleted - fully merged)"
     else
       echo "  ✗ $branch has unmerged commits"
       read -p "    Force delete? [y/N] " -n 1 -r
