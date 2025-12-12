@@ -57,11 +57,11 @@ else
 fi
 
 # Find local branches with no matching remote branch
-remote_branches=$(git branch -r | grep -v HEAD | sed 's|.*/||' | sort -u)
-local_branches=$(git branch --format '%(refname:short)')
-stale_branches=""
+remote_branches=$(git branch -r | grep -v HEAD | sed 's|^[^/]*/||' | sort -u)
+mapfile -t local_branches < <(git branch --format '%(refname:short)')
+stale_branches=()
 
-for branch in $local_branches; do
+for branch in "${local_branches[@]}"; do
   # Skip protected branches (default branch already detected above)
   if [[ "$branch" == "$default_branch" ]]; then
     continue
@@ -69,25 +69,22 @@ for branch in $local_branches; do
 
   # Check if remote branch exists
   if ! echo "$remote_branches" | grep -qx "$branch"; then
-    stale_branches="$stale_branches $branch"
+    stale_branches+=("$branch")
   fi
 done
 
-# Trim leading space
-stale_branches=$(echo "$stale_branches" | xargs)
-
-if [[ -n "$stale_branches" ]]; then
+if [[ ${#stale_branches[@]} -gt 0 ]]; then
   echo ""
   echo "Local branches with no matching remote:"
 
-  for branch in $stale_branches; do
+  for branch in "${stale_branches[@]}"; do
     if [[ "$branch" == "$current_branch" ]]; then
       echo "  ⚠ $branch (skipped - currently checked out)"
       continue
     fi
 
     # Check for unpushed commits (commits not in default branch)
-    unpushed_count=$(git log "$default_branch".."$branch" --oneline 2>/dev/null | wc -l | tr -d ' ')
+    unpushed_count=$(git log "$default_branch..$branch" --oneline 2>/dev/null | wc -l | tr -d ' ')
 
     if [[ "$unpushed_count" -gt 0 ]]; then
       echo "  ⚠ $branch has $unpushed_count unpushed commit(s) not in $default_branch"
@@ -102,7 +99,7 @@ if [[ -n "$stale_branches" ]]; then
     elif git branch -d "$branch" 2>/dev/null; then
       echo "  ✓ $branch (deleted - fully merged)"
     else
-      echo "  ✗ $branch has unmerged commits"
+      echo "  ✗ $branch cannot be safely deleted (not fully merged)"
       read -p "    Force delete? [y/N] " -n 1 -r
       echo
       if [[ $REPLY =~ ^[Yy]$ ]]; then
