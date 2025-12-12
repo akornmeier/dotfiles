@@ -83,11 +83,11 @@ if [[ ${#stale_branches[@]} -gt 0 ]]; then
       continue
     fi
 
-    # Check for unpushed commits (commits not in default branch)
-    unpushed_count=$(git log "$default_branch..$branch" --oneline 2>/dev/null | wc -l | tr -d ' ')
+    # Check for commits not merged into default branch
+    unmerged_count=$(git log "$default_branch..$branch" --oneline 2>/dev/null | wc -l | tr -d ' ')
 
-    if [[ "$unpushed_count" -gt 0 ]]; then
-      echo "  ⚠ $branch has $unpushed_count unpushed commit(s) not in $default_branch"
+    if [[ "$unmerged_count" -gt 0 ]]; then
+      echo "  ⚠ $branch has $unmerged_count commit(s) not in $default_branch"
       read -p "    Delete anyway? [y/N] " -n 1 -r
       echo
       if [[ $REPLY =~ ^[Yy]$ ]]; then
