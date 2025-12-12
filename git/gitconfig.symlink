@@ -52,3 +52,7 @@
 	required = true
 [init]
 	defaultBranch = main
+[includeIf "gitdir:/Users/tk/Code/storybook-nuxt/"]
+	path = ~/.gitconfig-storybook-nuxt
+[includeIf "gitdir:/Users/tk/Code/storybook/"]
+	path = ~/.gitconfig-storybook
