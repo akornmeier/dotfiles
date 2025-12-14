@@ -190,10 +190,10 @@ install_dotfiles () {
 
 		# Check if symlink already exists and is correct
 		if [ -L "$dst" ] && [ "$(readlink $dst)" == "$src" ]; then
-			((skipped_count++))
+			((skipped_count++)) || true
 		else
 			link_file "$src" "$dst"
-			((linked_count++))
+			((linked_count++)) || true
 		fi
 	done
 
