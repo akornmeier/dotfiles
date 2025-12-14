@@ -1,5 +1,15 @@
 # tk-dotfiles
 
+## 2.1.1
+
+### Patch Changes
+
+- 4d62d5f: improve gsync compatibility
+- c9030f8: Transform gsync from alias to interactive branch cleanup script
+- b41bff5: update 'gsync' command to clean branches no longer tracked on remote
+- cfaa7f9: fix syntax issue in dot command
+- e1a5e2f: Update Bash to latest in brewfile
+
 ## 2.1.0
 
 ### Minor Changes
