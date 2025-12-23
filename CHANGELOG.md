@@ -1,5 +1,11 @@
 # tk-dotfiles
 
+## 2.1.2
+
+### Patch Changes
+
+- dd22971: switch tdd-guard from Homebrew to npm global
+
 ## 2.1.1
 
 ### Patch Changes
