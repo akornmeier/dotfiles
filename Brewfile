@@ -28,7 +28,6 @@ brew 'postgresql', restart_service: false # SQL database (manual start: brew ser
 brew 'readline' # Library for command-line editing
 brew 'redis', restart_service: false # In-memory database (manual start: brew services start redis)
 brew 'starship' # Cross-shell prompt for astronauts
-brew 'tdd-guard' # Test-driven development guard
 brew 'uv' # Extremely fast Python package installer and resolver
 brew 'wget' # Internet file retriever
 brew 'zsh-autocomplete' # Zsh plugin that adds tab completion for common commands
