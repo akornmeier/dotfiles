@@ -330,21 +330,23 @@ cmd_install() {
 		echo -e "  ${YELLOW}- 📦 corepack: $(corepack --version)${NC}"
 		echo -e "  ${GREEN}✓ FNM setup complete!${NC}"
 
-		# Install npm global packages
-		echo ""
-		echo -e "${BLUE}📦 Installing npm global packages...${NC}"
+		# Install npm global packages (add packages to NPM_GLOBALS array as needed)
 		NPM_GLOBALS=(
-			"tdd-guard"
+			# Add global packages here, e.g.: "package-name"
 		)
-		for pkg in "${NPM_GLOBALS[@]}"; do
-			if npm list -g "$pkg" &>/dev/null; then
-				echo -e "  ${GREEN}✓ $pkg already installed${NC}"
-			else
-				echo "  Installing $pkg..."
-				npm install -g "$pkg"
-				echo -e "  ${GREEN}✓ $pkg installed${NC}"
-			fi
-		done
+		if [ ${#NPM_GLOBALS[@]} -gt 0 ]; then
+			echo ""
+			echo -e "${BLUE}📦 Installing npm global packages...${NC}"
+			for pkg in "${NPM_GLOBALS[@]}"; do
+				if npm list -g "$pkg" &>/dev/null; then
+					echo -e "  ${GREEN}✓ $pkg already installed${NC}"
+				else
+					echo "  Installing $pkg..."
+					npm install -g "$pkg"
+					echo -e "  ${GREEN}✓ $pkg installed${NC}"
+				fi
+			done
+		fi
 	fi
 
 	# Run zsh installer
@@ -439,35 +441,38 @@ cmd_update() {
 
 	# Update npm global packages (if FNM/Node is available)
 	if command -v npm &> /dev/null; then
-		echo ""
-		echo "============================================================"
-		echo -e "${BLUE}📦 Updating npm global packages...${NC}"
-		echo "============================================================"
-
 		NPM_GLOBALS=(
-			"tdd-guard"
+			# Add global packages here, e.g.: "package-name"
 		)
-		for pkg in "${NPM_GLOBALS[@]}"; do
+
+		if [ ${#NPM_GLOBALS[@]} -gt 0 ]; then
 			echo ""
-			echo "  Checking $pkg..."
-			# Check if package is installed
-			if npm list -g "$pkg" &>/dev/null; then
-				# Check for updates
-				CURRENT=$(npm list -g "$pkg" --depth=0 2>/dev/null | grep "$pkg" | sed 's/.*@//')
-				LATEST=$(npm view "$pkg" version 2>/dev/null)
-				if [ "$CURRENT" != "$LATEST" ]; then
-					echo "  Updating $pkg ($CURRENT → $LATEST)..."
-					npm install -g "$pkg"
-					echo -e "  ${GREEN}✓ $pkg updated${NC}"
+			echo "============================================================"
+			echo -e "${BLUE}📦 Updating npm global packages...${NC}"
+			echo "============================================================"
+
+			for pkg in "${NPM_GLOBALS[@]}"; do
+				echo ""
+				echo "  Checking $pkg..."
+				# Check if package is installed
+				if npm list -g "$pkg" &>/dev/null; then
+					# Check for updates
+					CURRENT=$(npm list -g "$pkg" --depth=0 2>/dev/null | grep "$pkg" | sed 's/.*@//')
+					LATEST=$(npm view "$pkg" version 2>/dev/null)
+					if [ "$CURRENT" != "$LATEST" ]; then
+						echo "  Updating $pkg ($CURRENT → $LATEST)..."
+						npm install -g "$pkg"
+						echo -e "  ${GREEN}✓ $pkg updated${NC}"
+					else
+						echo -e "  ${GREEN}✓ $pkg is up to date ($CURRENT)${NC}"
+					fi
 				else
-					echo -e "  ${GREEN}✓ $pkg is up to date ($CURRENT)${NC}"
+					echo "  Installing $pkg..."
+					npm install -g "$pkg"
+					echo -e "  ${GREEN}✓ $pkg installed${NC}"
 				fi
-			else
-				echo "  Installing $pkg..."
-				npm install -g "$pkg"
-				echo -e "  ${GREEN}✓ $pkg installed${NC}"
-			fi
-		done
+			done
+		fi
 	fi
 
 	echo ""
