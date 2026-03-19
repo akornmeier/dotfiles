@@ -1,5 +1,12 @@
 # tk-dotfiles
 
+## 2.1.3
+
+### Patch Changes
+
+- 0e970c6: Remove tdd-guard from NPM_GLOBALS arrays in both install and update
+- ba35ff3: Update brewfile and a claude code alias
+
 ## 2.1.2
 
 ### Patch Changes
