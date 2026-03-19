@@ -25,9 +25,11 @@ brew 'mas' # CLI for installing app from Mac App Store
 brew 'mongodb-community', restart_service: false # NoSQL database (manual start: brew services start mongodb-community)
 brew 'openssl' # Cryptography and SSL/TLS Toolkit
 brew 'postgresql', restart_service: false # SQL database (manual start: brew services start postgresql)
+brew 'pyenv' # Python virtual env
 brew 'readline' # Library for command-line editing
 brew 'redis', restart_service: false # In-memory database (manual start: brew services start redis)
 brew 'starship' # Cross-shell prompt for astronauts
+brew 'tmux' # Terminal multiplexer
 brew 'uv' # Extremely fast Python package installer and resolver
 brew 'wget' # Internet file retriever
 brew 'zsh-autocomplete' # Zsh plugin that adds tab completion for common commands
@@ -41,6 +43,7 @@ brew 'zsh' # UNIX shell (command interpreter)
 cask '1password' # Password manager
 cask 'claude' # AI programming friend
 cask 'claude-code' # AI programming friend
+cask 'cmux' # Ghostty-based terminal with vertical tabs
 cask 'cursor' # Write, edit, and chat about your code with AI
 cask 'discord' # VoIP and chat app
 cask 'firefox' # Web browser
@@ -49,6 +52,7 @@ cask 'font-jetbrains-mono-nerd-font' # Monospace font with programming ligatures
 cask 'google-chrome' # Web browser
 cask 'ghostty' # Terminal emulator
 cask 'insomnia' # REST client
+cask 'raycast' # Extendable launcher app
 cask 'readdle-spark' # Email client
 cask 'spotify' # Music streaming service
 cask 'tableplus' # GUI for databases
@@ -58,5 +62,5 @@ cask 'zoom' # Video conferencing software
 
 # Install mas apps
 # mas 'Keycastr',    id: 1058125028 # Keystroke visualizer
-mas 'Lungo',       id: 1263070803 # Prevents your Mac from going to sleep
-mas 'Magnet',      id: 441258766 # Window manager
+# mas 'Lungo',       id: 1263070803 # Prevents your Mac from going to sleep
+# mas 'Magnet',      id: 441258766 # Window manager
