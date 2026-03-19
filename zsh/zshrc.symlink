@@ -127,3 +127,5 @@ eval "$(starship init zsh)"
 
 # GPG signature
 export GPG_TTY=$(tty)
+
+export PATH="$HOME/.local/bin:$PATH"
