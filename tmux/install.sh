@@ -17,6 +17,9 @@ fi
 # Install tmux plugins non-interactively
 if command -v tmux &>/dev/null && [ -d "$TPM_DIR" ]; then
 	echo "  Installing tmux plugins..."
-	"$TPM_DIR/bin/install_plugins" 2>/dev/null || true
-	echo -e "  ${GREEN}✓ Tmux plugins installed${NC}"
+	if "$TPM_DIR/bin/install_plugins" 2>&1; then
+		echo -e "  ${GREEN}✓ Tmux plugins installed${NC}"
+	else
+		echo -e "  ${YELLOW}⚠ Tmux plugin installation failed (exit $?)${NC}" >&2
+	fi
 fi

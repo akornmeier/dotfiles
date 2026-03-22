@@ -166,7 +166,7 @@ Full installation - useful after major changes or pulling updates:
 
 - 🔗 Updates all symlinks
 - 📦 Installs all Brewfile packages
-- ⚙️ Runs all topic installers (macOS, FNM, Zsh, tmux, Claude)
+- ⚙️ Runs all topic installers (macOS, FNM, Zsh, tmux)
 - 🤖 Configures Claude Desktop/Code MCP servers
 - 🍏 Applies macOS system defaults
 - 🔐 Only prompts for sudo when actually needed

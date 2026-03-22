@@ -91,7 +91,7 @@ The main orchestration script (`bin/dot`) handles three modes:
 2. **`install`**: Full installation
    - Updates symlinks
    - Installs all Brewfile packages
-   - Runs topic installers (macos, fnm, zsh, claude)
+   - Runs topic installers (macos, fnm, zsh, tmux)
    - Configures Claude Desktop/Code MCP servers (if installed)
    - Applies macOS system defaults
 
