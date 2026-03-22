@@ -16,7 +16,7 @@ I use (Typescript/JavaScript, Node, Go, git, system libraries, and so on), so th
 
 Below is the general layout of my setup. Please review this _**before**_ running the install scripts.
 
-- **bin/**: Anything in `bin/` will be added to your `$PATH` and available everywhere.
+- **bin/**: Anything in `bin/` will be added to your `$PATH` and available everywhere. Includes `dot` (dotfiles manager), `e` (editor launcher), and `claude-agents` (multi-pane tmux launcher for Claude Code agents).
 - **Brewfile**: Manages three types of applications:
   1. Brew Tap - service level tasks
   2. Brew formulas - command-line tools and packages
@@ -31,6 +31,10 @@ Below is the general layout of my setup. Please review this _**before**_ running
   - **Claude Code**: Adds MCP servers via CLI (`sequential-thinking`, `serena`)
   - Gracefully skips setup if Claude Desktop/Code is not installed
   - Preserves existing user configurations
+- **tmux/**: Terminal multiplexer configuration for multi-pane workflows (e.g., running Claude Code agents side by side). Includes:
+  - **tmux.conf.symlink**: Full tmux config with Ctrl+a prefix, vim-style navigation, mouse support, and a Tokyo Night-inspired status bar
+  - **install.sh**: Installs TPM (Tmux Plugin Manager) and plugins (`tmux-sensible`, `tmux-resurrect`, `tmux-continuum`, `tmux-yank`)
+  - **aliases.zsh**: Tmux shortcuts (`ta`, `ts`, `tl`, etc.) and Claude Code orchestration alias (`cldyo`)
 - **topic/\*.zsh**: Any files ending in `.zsh` get loaded into your
   environment.
 - **topic/path.zsh**: Any file named `path.zsh` is loaded first and is
@@ -96,7 +100,7 @@ If you choose to continue, the installation (`dot install`) will:
 
 1. 📦 Install all packages from the Brewfile (brew, cask, and mas apps)
 2. 🔧 Set up FNM and Node.js LTS
-3. ⚙️ Run all topic-specific installers (macos, fnm, zsh, claude)
+3. ⚙️ Run all topic-specific installers (macos, fnm, zsh, tmux, claude)
 4. 🍏 Apply macOS system defaults
 
 ### Password Prompts
@@ -114,6 +118,7 @@ On subsequent runs, if everything is already configured, you may not be prompted
 - **Cask applications**: GUI apps like Chrome, Discord, Warp, Zoom, Claude
 - **Node.js**: Latest LTS version via FNM
 - **Oh My Zsh**: If not already installed
+- **tmux + TPM**: Tmux Plugin Manager and plugins (resurrect, continuum, yank)
 - **Claude MCP servers**: Model Context Protocol servers for Claude Desktop and Claude Code
   - **sequential-thinking**: Enhanced reasoning capabilities (via npx)
   - **serena**: Advanced code analysis and understanding (via uvx)
@@ -161,7 +166,7 @@ Full installation - useful after major changes or pulling updates:
 
 - 🔗 Updates all symlinks
 - 📦 Installs all Brewfile packages
-- ⚙️ Runs all topic installers (macOS, FNM, Zsh, Claude)
+- ⚙️ Runs all topic installers (macOS, FNM, Zsh, tmux)
 - 🤖 Configures Claude Desktop/Code MCP servers
 - 🍏 Applies macOS system defaults
 - 🔐 Only prompts for sudo when actually needed
@@ -245,6 +250,29 @@ FNM (Fast Node Manager) is used instead of nvm for better performance. Node.js b
 - GUI applications that need Node.js
 - System services and LaunchAgents
 
+### tmux and Claude Code Agents
+
+tmux is configured with TPM (Tmux Plugin Manager) for plugin management. The `claude-agents` script creates multi-pane tmux sessions for running Claude Code agents side by side:
+
+```sh
+claude-agents              # 2 panes (default)
+claude-agents 3            # 3 panes
+claude-agents 4 myproject  # 4 panes, session named "myproject"
+```
+
+Key tmux keybindings (prefix is `Ctrl+a`):
+
+| Keybinding       | Action                     |
+| ---------------- | -------------------------- |
+| `Ctrl+a \|`      | Split pane vertically      |
+| `Ctrl+a -`       | Split pane horizontally    |
+| `Ctrl+a h/j/k/l` | Navigate panes (vim-style) |
+| `Ctrl+a r`       | Reload tmux config         |
+
+**Installing TPM plugins manually**: If plugins aren't installed, press `Ctrl+a I` (capital I) inside tmux to trigger TPM plugin installation.
+
+**Session persistence**: `tmux-resurrect` and `tmux-continuum` auto-save your session layout every 15 minutes. After a reboot, run `tmux` and your pane layout will be restored automatically.
+
 ### Claude Desktop and MCP Servers
 
 Claude Desktop and Claude Code can be extended with MCP (Model Context Protocol) servers. The dotfiles automatically configure two powerful servers:
@@ -253,17 +281,20 @@ Claude Desktop and Claude Code can be extended with MCP (Model Context Protocol)
 - **serena**: Offers advanced code analysis and symbol-level understanding
 
 **Setup Requirements**:
+
 - Claude Desktop must be installed via Brewfile (`cask 'claude'`)
 - OR Claude Code must be installed (`brew install --cask claude-code`)
 - Node.js via FNM (for `npx` command)
 - `uv` via Homebrew (for `uvx` command)
 
 **Post-Installation**:
+
 - **Claude Desktop**: After running `dot install`, fully quit Claude (File → Exit, not just close window) and restart
 - **Claude Code**: Run `/mcp` command to authenticate MCP servers
 - Look for the hammer icon in Claude Desktop interface to verify MCP tools are loaded
 
 **Adding More MCP Servers**:
+
 - **Claude Desktop**: Edit `claude/claude_desktop_config.json.template` and run `./claude/install.sh`
 - **Claude Code**: Use `claude mcp add` command (see `claude mcp --help`)
 

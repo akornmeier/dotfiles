@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+set -e
+
+# claude-agents - Launch a tmux session with multiple panes for Claude Code agents
+#
+# Usage:
+#   claude-agents              # 2 panes (default)
+#   claude-agents 3            # 3 panes
+#   claude-agents 4 myproject  # 4 panes, session named "myproject"
+
+PANE_COUNT="${1:-2}"
+SESSION_NAME="${2:-claude-agents}"
+
+# Validate pane count
+if ! [[ "$PANE_COUNT" =~ ^[2-6]$ ]]; then
+	echo "Usage: claude-agents [panes:2-6] [session-name]"
+	exit 1
+fi
+
+# Check prerequisites
+if ! command -v tmux &>/dev/null; then
+	echo "Error: tmux is not installed. Run 'dot install' first."
+	exit 1
+fi
+
+# Reattach to existing session
+if tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
+	echo "Session '$SESSION_NAME' already exists. Attaching..."
+	exec tmux attach-session -t "$SESSION_NAME"
+fi
+
+# Create new session with first pane
+tmux new-session -d -s "$SESSION_NAME"
+
+# Create additional panes
+for ((i = 2; i <= PANE_COUNT; i++)); do
+	tmux split-window -t "$SESSION_NAME" -h
+	tmux select-layout -t "$SESSION_NAME" tiled
+done
+
+# Final layout adjustment
+tmux select-layout -t "$SESSION_NAME" tiled
+tmux select-pane -t "$SESSION_NAME:1.1"
+
+# Attach
+exec tmux attach-session -t "$SESSION_NAME"

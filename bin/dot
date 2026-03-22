@@ -354,6 +354,11 @@ cmd_install() {
 		source "$DOTFILES/zsh/install.sh"
 	fi
 
+	# Run tmux installer
+	if [ -f "$DOTFILES/tmux/install.sh" ]; then
+		source "$DOTFILES/tmux/install.sh"
+	fi
+
 	# Set macOS defaults
 	if [ -f "$DOTFILES/macos/set-defaults.sh" ]; then
 		echo ""

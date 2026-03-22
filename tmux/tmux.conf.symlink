@@ -1,0 +1,99 @@
+# ──────────────────────────────────────────────
+# Terminal & Colors
+# ──────────────────────────────────────────────
+set -g default-terminal "screen-256color"
+set-option -sa terminal-overrides ",xterm*:Tc"
+
+# ──────────────────────────────────────────────
+# General Settings
+# ──────────────────────────────────────────────
+# Change prefix from Ctrl+b to Ctrl+a
+unbind C-b
+set -g prefix C-a
+bind C-a send-prefix
+
+# Enable mouse support
+set -g mouse on
+
+# Start windows and panes at 1, not 0
+set -g base-index 1
+setw -g pane-base-index 1
+
+# Renumber windows when one is closed
+set -g renumber-windows on
+
+# Increase scrollback buffer
+set -g history-limit 50000
+
+# Reduce escape time for faster key response
+set -sg escape-time 0
+
+# Enable focus events
+set -g focus-events on
+
+# ──────────────────────────────────────────────
+# Key Bindings
+# ──────────────────────────────────────────────
+# Vi mode for copy
+setw -g mode-keys vi
+
+# Split panes with | and - (in current path)
+bind | split-window -h -c "#{pane_current_path}"
+bind - split-window -v -c "#{pane_current_path}"
+unbind '"'
+unbind %
+
+# New window in current path
+bind c new-window -c "#{pane_current_path}"
+
+# Vim-style pane navigation
+bind h select-pane -L
+bind j select-pane -D
+bind k select-pane -U
+bind l select-pane -R
+
+# Resize panes with Shift+arrow
+bind -r H resize-pane -L 5
+bind -r J resize-pane -D 5
+bind -r K resize-pane -U 5
+bind -r L resize-pane -R 5
+
+# Quick reload config
+bind r source-file ~/.tmux.conf \; display "Config reloaded!"
+
+# ──────────────────────────────────────────────
+# Status Bar
+# ──────────────────────────────────────────────
+set -g status-position bottom
+set -g status-style "bg=#1a1b26,fg=#a9b1d6"
+set -g status-left-length 40
+set -g status-right-length 60
+set -g status-left "#[fg=#7aa2f7,bold] #S #[fg=#545c7e]│ "
+set -g status-right "#[fg=#545c7e]│ #[fg=#a9b1d6]%Y-%m-%d #[fg=#545c7e]│ #[fg=#7aa2f7]%H:%M "
+
+# Window status
+setw -g window-status-format "#[fg=#545c7e] #I:#W "
+setw -g window-status-current-format "#[fg=#7aa2f7,bold] #I:#W "
+
+# Pane borders
+set -g pane-border-style "fg=#545c7e"
+set -g pane-active-border-style "fg=#7aa2f7"
+
+# Message style
+set -g message-style "bg=#1a1b26,fg=#7aa2f7"
+
+# ──────────────────────────────────────────────
+# Plugins (via TPM)
+# ──────────────────────────────────────────────
+set -g @plugin 'tmux-plugins/tpm'
+set -g @plugin 'tmux-plugins/tmux-sensible'
+set -g @plugin 'tmux-plugins/tmux-resurrect'
+set -g @plugin 'tmux-plugins/tmux-continuum'
+set -g @plugin 'tmux-plugins/tmux-yank'
+
+# Plugin settings
+set -g @continuum-restore 'on'
+set -g @resurrect-capture-pane-contents 'on'
+
+# Initialize TPM (keep at bottom)
+run '~/.tmux/plugins/tpm/tpm'
