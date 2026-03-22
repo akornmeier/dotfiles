@@ -1,5 +1,17 @@
 # tk-dotfiles
 
+## 2.2.0
+
+### Minor Changes
+
+- 8bff98f: add tmux configuration and installation scripts
+
+### Patch Changes
+
+- 0e970c6: Remove tdd-guard from NPM_GLOBALS arrays in both install and update
+- ba35ff3: Update brewfile and a claude code alias
+- 8b099b8: add tmux visual plugins for claude orchestration
+
 ## 2.1.2
 
 ### Patch Changes
