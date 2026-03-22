@@ -105,6 +105,7 @@ The main orchestration script (`bin/dot`) handles three modes:
 ### Symlink Management
 
 Symlinks are created automatically from `*.symlink` files:
+
 - Files are linked from topics into `$HOME`
 - The script handles conflicts (skip, overwrite, backup)
 - Only changed symlinks are updated during `dot update`
@@ -112,6 +113,7 @@ Symlinks are created automatically from `*.symlink` files:
 ### Node.js Management
 
 Uses FNM (Fast Node Manager) instead of nvm:
+
 - Node binaries are symlinked to `/usr/local/bin` for system-wide access
 - This enables GUI apps and MCP servers to use Node
 - Homebrew's Node is automatically removed if detected
@@ -122,6 +124,7 @@ Uses FNM (Fast Node Manager) instead of nvm:
 ### Brewfile
 
 The Brewfile manages three types of installations:
+
 1. Brew Taps - service level tasks
 2. Brew formulas - CLI tools (git, gh, fnm, starship, etc.)
 3. Casks - GUI applications (Chrome, Discord, Warp, Zoom, etc.)
@@ -131,6 +134,7 @@ The Brewfile manages three types of installations:
 ### FNM Node Management
 
 FNM is preferred over Homebrew's Node:
+
 - Node.js LTS is installed via FNM
 - Symlinks are created for global access (node, npm, npx, corepack)
 - If any formula installs node as a dependency, it's removed by `fnm/install.sh` and `bin/dot`
@@ -146,22 +150,26 @@ FNM is preferred over Homebrew's Node:
 The `claude/` topic configures Model Context Protocol (MCP) servers for Claude Desktop and Claude Code:
 
 **For Claude Desktop:**
+
 - Symlinks `claude_desktop_config.json.template` to `~/Library/Application Support/Claude/`
 - Configured servers: `sequential-thinking` (npx), `serena` (uvx)
 - Preserves existing user configurations if present
 - Requires fully quitting Claude Desktop (File → Exit) and restarting after changes
 
 **For Claude Code:**
+
 - Automatically adds MCP servers via `claude mcp add` command
 - Same servers as Claude Desktop: `sequential-thinking`, `serena`
 - Use `/mcp` command in Claude Code to authenticate servers
 
 **Dependencies:**
+
 - Node.js via FNM (for `npx` command)
 - `uv` via Homebrew (for `uvx` command)
 - Gracefully skips setup if Claude Desktop/Code is not installed
 
 **Adding more servers:**
+
 - Edit `claude/claude_desktop_config.json.template`
 - Run `./claude/install.sh` or `dot install`
 

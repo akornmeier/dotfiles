@@ -38,19 +38,11 @@ The template will be a complete, valid JSON file:
   "mcpServers": {
     "serena": {
       "command": "uvx",
-      "args": [
-        "--from",
-        "git+https://github.com/oraios/serena",
-        "serena",
-        "start-mcp-server"
-      ]
+      "args": ["--from", "git+https://github.com/oraios/serena", "serena", "start-mcp-server"]
     },
     "sequential-thinking": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-sequential-thinking"
-      ]
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
     }
   }
 }
@@ -83,16 +75,19 @@ The `claude/install.sh` script will:
 ## Integration with Existing System
 
 ### Dependencies (already in Brewfile)
+
 - `brew 'uv'` - for Serena's uvx command
 - `cask 'claude'` - Claude Desktop app
 - Node.js via FNM - for npx command
 
 ### Dotfiles Integration
+
 - `dot install` automatically runs `claude/install.sh`
 - `dot update` doesn't need special handling
 - No changes needed to existing scripts
 
 ### Adding More MCP Servers
+
 1. Edit `claude/claude_desktop_config.json.template`
 2. Run `./claude/install.sh` or `dot install`
 3. Fully quit Claude Desktop (File → Exit)
@@ -125,6 +120,7 @@ User must fully quit Claude Desktop (File → Exit, not just close window) and r
 ## Testing
 
 To verify the setup:
+
 1. Run `dot install`
 2. Check for config symlink: `ls -la ~/Library/Application\ Support/Claude/`
 3. Verify symlink target points to dotfiles template
