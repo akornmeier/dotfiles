@@ -1,5 +1,11 @@
 # tk-dotfiles
 
+## 2.3.0
+
+### Minor Changes
+
+- b586a18: Added new brew recipes for bun and just
+
 ## 2.2.0
 
 ### Minor Changes
