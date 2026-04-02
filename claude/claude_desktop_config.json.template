@@ -11,8 +11,8 @@
   "preferences": {
     "chromeExtensionEnabled": true,
     "coworkScheduledTasksEnabled": true,
+    "ccdScheduledTasksEnabled": true,
     "sidebarMode": "chat",
-    "coworkWebSearchEnabled": true,
-    "ccdScheduledTasksEnabled": true
+    "coworkWebSearchEnabled": true
   }
 }
