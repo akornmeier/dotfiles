@@ -1,6 +1,7 @@
 cask_args appdir: '/Applications'
 
 tap 'mongodb/brew'
+tap 'oven-sh/bun'
 
 # gnu stuff
 brew 'bash' # Bash 5.x (macOS ships with 3.2)
@@ -20,10 +21,12 @@ brew 'fnm' # Node.js version manager and corepack installer
 brew 'gh' # GitHub official CLI (replaces deprecated hub)
 brew 'imagemagick' # Image manipulation library
 brew 'jq' # Lightweight and flexible command-line JSON processor
+brew 'just' # Task runner
 brew 'libgit2' # C library of Git core methods that is re-entrant and linkable
 brew 'mas' # CLI for installing app from Mac App Store
 brew 'mongodb-community', restart_service: false # NoSQL database (manual start: brew services start mongodb-community)
 brew 'openssl' # Cryptography and SSL/TLS Toolkit
+brew 'pi-coding-agent' # Customize agent harness
 brew 'postgresql', restart_service: false # SQL database (manual start: brew services start postgresql)
 brew 'pyenv' # Python virtual env
 brew 'readline' # Library for command-line editing
