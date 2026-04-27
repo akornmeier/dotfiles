@@ -349,6 +349,11 @@ cmd_install() {
 		fi
 	fi
 
+	# Run iTerm2 installer
+	if [ -f "$DOTFILES/iterm2/install.sh" ]; then
+		DOT_MODE=install source "$DOTFILES/iterm2/install.sh"
+	fi
+
 	# Run zsh installer
 	if [ -f "$DOTFILES/zsh/install.sh" ]; then
 		source "$DOTFILES/zsh/install.sh"
@@ -443,6 +448,11 @@ cmd_update() {
 	echo "🧹 Cleaning up Homebrew..."
 	brew cleanup
 	echo -e "  ${GREEN}✓ Cleanup complete${NC}"
+
+	# Run iTerm2 installer in update mode
+	if [ -f "$DOTFILES/iterm2/install.sh" ]; then
+		DOT_MODE=update source "$DOTFILES/iterm2/install.sh"
+	fi
 
 	# Update npm global packages (if FNM/Node is available)
 	if command -v npm &> /dev/null; then
