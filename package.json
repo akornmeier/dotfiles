@@ -1,6 +1,6 @@
 {
   "name": "tk-dotfiles",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Amazing dotfiles for macOS development environment",
   "private": true,
   "scripts": {
