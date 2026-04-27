@@ -11,4 +11,4 @@ alias tkss='tmux kill-session -t'
 # prompting for user confirmation. Only use this in trusted, sandboxed
 # environments. Do not source this file on shared or production machines.
 # Claude Code Orchestration
-alias cldyo='export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 && claude --verbose --dangerously-skip-permissions --model opus --teammate-mode tmux'
+alias cldyo='export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 && claude --dangerously-skip-permissions --model opus --teammate-mode tmux'
