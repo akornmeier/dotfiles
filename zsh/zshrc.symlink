@@ -71,13 +71,19 @@ done
 # Completion
 
 # Add zsh-completions to fpath before initializing compinit
-if [[ -d "$HOMEBREW_PREFIX/share/zsh-completions" ]]; then
-  FPATH="$HOMEBREW_PREFIX/share/zsh-completions:$FPATH"
-fi
+# if [[ -d "$HOMEBREW_PREFIX/share/zsh-completions" ]]; then
+#   FPATH="$HOMEBREW_PREFIX/share/zsh-completions:$FPATH"
+# fi
 
 # Initialize autocomplete here, otherwise functions won't be loaded
-autoload -Uz compinit
-compinit -i
+# autoload -Uz compinit
+# compinit -i
+
+if type brew &>/dev/null; then
+  FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
+  autoload -Uz compinit
+  compinit
+fi
 
 # Load zsh plugins from Homebrew (check existence before sourcing)
 [[ -f "$HOMEBREW_PREFIX/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh" ]] && \

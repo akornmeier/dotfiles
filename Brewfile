@@ -10,6 +10,7 @@ brew 'findutils'
 
 brew 'ack' # a grep-like source code search tool
 brew 'act' # GitHub Actions runner
+brew 'bun' # Node package manager
 brew 'gcc' # the GNU Compiler
 brew 'git-delta' # syntax-highlighting pager for git and diff output
 brew 'git' # distributed revision control system
@@ -45,7 +46,7 @@ brew 'zsh' # UNIX shell (command interpreter)
 
 cask '1password' # Password manager
 cask 'claude' # AI programming friend
-cask 'claude-code' # AI programming friend
+cask 'claude-code@latest' # AI programming friend
 cask 'cmux' # Ghostty-based terminal with vertical tabs
 cask 'cursor' # Write, edit, and chat about your code with AI
 cask 'discord' # VoIP and chat app
@@ -55,6 +56,7 @@ cask 'font-jetbrains-mono-nerd-font' # Monospace font with programming ligatures
 cask 'google-chrome' # Web browser
 cask 'ghostty' # Terminal emulator
 cask 'insomnia' # REST client
+cask 'iterm2' # Best terminal for agentic coding
 cask 'raycast' # Extendable launcher app
 cask 'readdle-spark' # Email client
 cask 'spotify' # Music streaming service
