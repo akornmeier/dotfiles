@@ -149,7 +149,7 @@ FNM is preferred over Homebrew's Node:
 
 The `iterm2/` topic installs uv-managed CLI tools that complement iTerm2 (e.g., `it2`):
 
-- Gated on iTerm2 being installed at `/Applications/iTerm.app` (skips silently otherwise)
+- Gated on iTerm2 being installed at `/Applications/iTerm.app` (prints a skip notice and exits 0 otherwise)
 - Gated on `uv` being available (Brewfile guarantees this)
 - Tools listed in the `UV_TOOLS=("it2")` array inside `iterm2/install.sh` — add entries to extend
 - Runs in both `dot install` and `dot update`:

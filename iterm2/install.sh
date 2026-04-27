@@ -30,7 +30,8 @@ for tool in "${UV_TOOLS[@]}"; do
   if uv tool list 2>/dev/null | grep -q "^${tool} "; then
     if [ "$DOT_MODE" = "update" ]; then
       echo "  🔄 Upgrading $tool..."
-      if uv tool upgrade "$tool" 2>&1 | sed 's/^/    /'; then
+      uv tool upgrade "$tool" 2>&1 | sed 's/^/    /'
+      if [ "${PIPESTATUS[0]}" -eq 0 ]; then
         echo "  ✓ $tool upgrade complete"
       else
         echo "  ⚠️  Failed to upgrade $tool (continuing)"
@@ -40,7 +41,8 @@ for tool in "${UV_TOOLS[@]}"; do
     fi
   else
     echo "  📦 Installing $tool..."
-    if uv tool install "$tool" 2>&1 | sed 's/^/    /'; then
+    uv tool install "$tool" 2>&1 | sed 's/^/    /'
+    if [ "${PIPESTATUS[0]}" -eq 0 ]; then
       echo "  ✓ $tool installed"
     else
       echo "  ⚠️  Failed to install $tool (continuing)"
