@@ -1,5 +1,12 @@
 # tk-dotfiles
 
+## 2.4.0
+
+### Minor Changes
+
+- 88ebe11: Add iterm2 and bun to Brewfile, expand global gitignore, bump pnpm to 10.33.0, fix zsh-completions fpath, and add --verbose to cldyo alias. CI workflows now read pnpm version from packageManager field.
+- 8f2dad0: Add iterm2 topic installer that auto-installs the it2 CLI via uv tool when iTerm2 is present, and upgrades it on dot update. Introduces a DOT_MODE env signal so topic installers can branch on install vs update lifecycle.
+
 ## 2.3.0
 
 ### Minor Changes
