@@ -145,6 +145,22 @@ FNM is preferred over Homebrew's Node:
 - `macos/set-defaults.sh`: Applies system preferences (requires sudo)
 - Both scripts are run during `dot install`
 
+### iTerm2 CLI Tooling
+
+The `iterm2/` topic installs uv-managed CLI tools that complement iTerm2 (e.g., `it2`):
+
+- Gated on iTerm2 being installed at `/Applications/iTerm.app` (skips silently otherwise)
+- Gated on `uv` being available (Brewfile guarantees this)
+- Tools listed in the `UV_TOOLS=("it2")` array inside `iterm2/install.sh` — add entries to extend
+- Runs in both `dot install` and `dot update`:
+  - `dot install` (DOT_MODE=install): installs missing tools
+  - `dot update` (DOT_MODE=update): installs missing tools and upgrades existing ones
+- Failures on a single tool emit a warning and continue — never abort the broader `dot` run
+
+**Adding more uv tools:**
+
+- Edit `UV_TOOLS=()` in `iterm2/install.sh` and re-run `dot install` or `dot update`
+
 ### Claude MCP Servers
 
 The `claude/` topic configures Model Context Protocol (MCP) servers for Claude Desktop and Claude Code:
