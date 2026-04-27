@@ -449,6 +449,11 @@ cmd_update() {
 	brew cleanup
 	echo -e "  ${GREEN}✓ Cleanup complete${NC}"
 
+	# Run iTerm2 installer in update mode
+	if [ -f "$DOTFILES/iterm2/install.sh" ]; then
+		DOT_MODE=update source "$DOTFILES/iterm2/install.sh"
+	fi
+
 	# Update npm global packages (if FNM/Node is available)
 	if command -v npm &> /dev/null; then
 		NPM_GLOBALS=(
