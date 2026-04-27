@@ -14,12 +14,12 @@
 
 ## File Structure
 
-| Path | Action | Responsibility |
-|---|---|---|
-| `iterm2/install.sh` | Create | Topic installer — guards, `UV_TOOLS` array, install + upgrade loop |
-| `bin/dot` | Modify (2 sites) | Source `iterm2/install.sh` from `cmd_install` and `cmd_update`, exporting `DOT_MODE` |
-| `CLAUDE.md` | Modify | Document the `iterm2/` topic and `UV_TOOLS` extension pattern |
-| `.changeset/iterm2-it2-installer.md` | Create | Changeset entry (project convention) |
+| Path                                 | Action           | Responsibility                                                                       |
+| ------------------------------------ | ---------------- | ------------------------------------------------------------------------------------ |
+| `iterm2/install.sh`                  | Create           | Topic installer — guards, `UV_TOOLS` array, install + upgrade loop                   |
+| `bin/dot`                            | Modify (2 sites) | Source `iterm2/install.sh` from `cmd_install` and `cmd_update`, exporting `DOT_MODE` |
+| `CLAUDE.md`                          | Modify           | Document the `iterm2/` topic and `UV_TOOLS` extension pattern                        |
+| `.changeset/iterm2-it2-installer.md` | Create           | Changeset entry (project convention)                                                 |
 
 No test framework exists in this repo; verification is manual smoke testing using concrete commands with expected output, per the project's existing convention.
 
@@ -28,6 +28,7 @@ No test framework exists in this repo; verification is manual smoke testing usin
 ## Task 1: Create `iterm2/install.sh` with guards and core loop
 
 **Files:**
+
 - Create: `iterm2/install.sh`
 
 - [ ] **Step 1.1: Create `iterm2/install.sh` with full content**
@@ -89,6 +90,7 @@ echo "  ✓ iTerm2 CLI tooling setup complete"
 - [ ] **Step 1.2: Make it executable**
 
 Run:
+
 ```bash
 chmod +x /Users/tk/.dotfiles/iterm2/install.sh
 ```
@@ -98,6 +100,7 @@ Expected: no output.
 - [ ] **Step 1.3: Syntax-check the script**
 
 Run:
+
 ```bash
 bash -n /Users/tk/.dotfiles/iterm2/install.sh
 ```
@@ -107,11 +110,13 @@ Expected: no output, exit 0.
 - [ ] **Step 1.4: Verify the "already installed" path (DOT_MODE unset → install semantics)**
 
 Run:
+
 ```bash
 bash /Users/tk/.dotfiles/iterm2/install.sh
 ```
 
 Expected output includes:
+
 ```
 🖥️  Setting up iTerm2 CLI tooling...
   ✓ it2 already installed
@@ -123,11 +128,13 @@ Expected output includes:
 - [ ] **Step 1.5: Verify the upgrade path (DOT_MODE=update)**
 
 Run:
+
 ```bash
 DOT_MODE=update bash /Users/tk/.dotfiles/iterm2/install.sh
 ```
 
 Expected output includes:
+
 ```
 🖥️  Setting up iTerm2 CLI tooling...
   🔄 Upgrading it2...
@@ -141,6 +148,7 @@ Expected output includes:
 - [ ] **Step 1.6: Verify the iTerm2-missing skip path**
 
 Run:
+
 ```bash
 # Simulate missing iTerm2 by overriding the path test via a wrapper script
 DOT_MODE=install bash -c '
@@ -171,11 +179,13 @@ Expected: commit succeeds.
 ## Task 2: Wire `iterm2/install.sh` into `cmd_install`
 
 **Files:**
+
 - Modify: `bin/dot` (insert after the FNM block, before the zsh installer block)
 
 - [ ] **Step 2.1: Locate the insertion site**
 
 Run:
+
 ```bash
 grep -n "Run zsh installer" /Users/tk/.dotfiles/bin/dot
 ```
@@ -216,6 +226,7 @@ Replace with:
 - [ ] **Step 2.3: Syntax-check `bin/dot`**
 
 Run:
+
 ```bash
 bash -n /Users/tk/.dotfiles/bin/dot
 ```
@@ -225,11 +236,13 @@ Expected: no output, exit 0.
 - [ ] **Step 2.4: Verify the install branch executes correctly via dry-run trace**
 
 Run:
+
 ```bash
 grep -B 1 -A 3 "iterm2/install.sh" /Users/tk/.dotfiles/bin/dot
 ```
 
 Expected output (one match, in `cmd_install`):
+
 ```
 	# Run iTerm2 installer
 	if [ -f "$DOTFILES/iterm2/install.sh" ]; then
@@ -255,11 +268,13 @@ Expected: commit succeeds.
 ## Task 3: Wire `iterm2/install.sh` into `cmd_update`
 
 **Files:**
+
 - Modify: `bin/dot` (insert after the brew bundle check + node cleanup blocks, before npm globals update block)
 
 - [ ] **Step 3.1: Locate the insertion site**
 
 Run:
+
 ```bash
 grep -n "Cleanup complete\|Updating npm global\|Update npm global packages" /Users/tk/.dotfiles/bin/dot
 ```
@@ -300,6 +315,7 @@ Replace with:
 - [ ] **Step 3.3: Syntax-check `bin/dot`**
 
 Run:
+
 ```bash
 bash -n /Users/tk/.dotfiles/bin/dot
 ```
@@ -309,6 +325,7 @@ Expected: no output, exit 0.
 - [ ] **Step 3.4: Verify both install and update sites are wired**
 
 Run:
+
 ```bash
 grep -c "iterm2/install.sh" /Users/tk/.dotfiles/bin/dot
 ```
@@ -316,11 +333,13 @@ grep -c "iterm2/install.sh" /Users/tk/.dotfiles/bin/dot
 Expected: `2`
 
 Run:
+
 ```bash
 grep "DOT_MODE=" /Users/tk/.dotfiles/bin/dot
 ```
 
 Expected output (two lines):
+
 ```
 		DOT_MODE=install source "$DOTFILES/iterm2/install.sh"
 		DOT_MODE=update source "$DOTFILES/iterm2/install.sh"
@@ -344,11 +363,13 @@ Expected: commit succeeds.
 ## Task 4: Document the new topic in `CLAUDE.md`
 
 **Files:**
+
 - Modify: `CLAUDE.md` (insert new subsection under "Important Notes")
 
 - [ ] **Step 4.1: Find the "Claude MCP Servers" subsection — we'll add the iTerm2 subsection right above it**
 
 Run:
+
 ```bash
 grep -n "^### Claude MCP Servers" /Users/tk/.dotfiles/CLAUDE.md
 ```
@@ -388,11 +409,13 @@ The `iterm2/` topic installs uv-managed CLI tools that complement iTerm2 (e.g., 
 - [ ] **Step 4.3: Verify the doc renders**
 
 Run:
+
 ```bash
 grep -A 2 "^### iTerm2 CLI Tooling" /Users/tk/.dotfiles/CLAUDE.md
 ```
 
 Expected output:
+
 ```
 ### iTerm2 CLI Tooling
 
@@ -413,6 +436,7 @@ Expected: commit succeeds.
 ## Task 5: Add changeset entry
 
 **Files:**
+
 - Create: `.changeset/iterm2-it2-installer.md`
 
 - [ ] **Step 5.1: Create the changeset file**
@@ -430,6 +454,7 @@ Add iterm2 topic installer that auto-installs the it2 CLI via uv tool when iTerm
 - [ ] **Step 5.2: Verify the changeset format**
 
 Run:
+
 ```bash
 cat /Users/tk/.dotfiles/.changeset/iterm2-it2-installer.md
 ```
@@ -439,6 +464,7 @@ Expected: prints exactly the content above.
 - [ ] **Step 5.3: Run pnpm format to align with repo style**
 
 Run:
+
 ```bash
 cd /Users/tk/.dotfiles && pnpm format
 ```
@@ -463,11 +489,13 @@ Expected: commit succeeds.
 - [ ] **Step 6.1: Run `dot update` end-to-end**
 
 Run:
+
 ```bash
 /Users/tk/.dotfiles/bin/dot update
 ```
 
 Expected behavior in output:
+
 - Standard `dot update` flow runs (symlinks, brew, etc.)
 - After `🧹 Cleaning up Homebrew...` block, see:
   ```
@@ -481,6 +509,7 @@ Expected behavior in output:
 - Final "Update complete" banner
 
 Confirm exit code:
+
 ```bash
 echo $?
 ```
@@ -490,6 +519,7 @@ Expected: `0`
 - [ ] **Step 6.2: Verify `it2` still works**
 
 Run:
+
 ```bash
 it2 --version
 ```
@@ -499,6 +529,7 @@ Expected: prints a version line (should match what `uv tool list` shows for `it2
 - [ ] **Step 6.3: Verify idempotency — run `dot update` again**
 
 Run:
+
 ```bash
 /Users/tk/.dotfiles/bin/dot update
 ```

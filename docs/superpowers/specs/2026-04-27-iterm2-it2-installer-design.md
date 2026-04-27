@@ -90,13 +90,13 @@ The `uv tool list` output prefixes each tool name with `<name> v<version>` at th
 
 ## Error handling
 
-| Condition | Behavior |
-|---|---|
-| iTerm2 missing | Skip silently with `⏩` line, exit 0 |
-| `uv` missing | Warn with `⚠️` line, exit 0 |
-| Single `uv tool install` fails (e.g., network) | Print warning, continue with next tool, don't abort `dot` |
-| Single `uv tool upgrade` fails | Same as above |
-| `uv tool list` parse error | Treat as "not installed" — install path will retry; failures are surfaced there |
+| Condition                                      | Behavior                                                                        |
+| ---------------------------------------------- | ------------------------------------------------------------------------------- |
+| iTerm2 missing                                 | Skip silently with `⏩` line, exit 0                                            |
+| `uv` missing                                   | Warn with `⚠️` line, exit 0                                                     |
+| Single `uv tool install` fails (e.g., network) | Print warning, continue with next tool, don't abort `dot`                       |
+| Single `uv tool upgrade` fails                 | Same as above                                                                   |
+| `uv tool list` parse error                     | Treat as "not installed" — install path will retry; failures are surfaced there |
 
 ## Documentation updates
 
