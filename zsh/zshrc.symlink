@@ -1,6 +1,12 @@
 # shortcut to this dotfiles path is $DOTFILES
 export DOTFILES=$HOME/.dotfiles
 
+# Dedupe PATH automatically. zsh ties $PATH (scalar) and $path (array); the -U
+# attribute keeps the array unique by removing later duplicates. This makes
+# re-sourcing .zshrc (tmux, VS Code login+interactive shells, etc.) idempotent
+# and prevents the "duplicated PATH" we saw with two fnm_multishells entries.
+typeset -U PATH path
+
 # Set HOMEBREW_PREFIX based on architecture
 if [[ -d "/opt/homebrew" ]]; then
   export HOMEBREW_PREFIX="/opt/homebrew"
@@ -18,8 +24,10 @@ alias zshconfig="code ~/.zshrc"
 alias ohmyzsh="code ~/.oh-my-zsh"
 alias reload="source ~/.zshrc"
 
-# FNM environment variables
-eval "$(fnm env --use-on-cd --version-file-strategy=recursive --corepack-enabled --shell zsh)"
+# NOTE: FNM env is initialised at the BOTTOM of this file. It must run AFTER
+# every PATH-modifying line so its per-shell shim
+# (~/.local/state/fnm_multishells/PID/bin) ends up first on PATH and wins
+# against system Node binaries.
 
 # Stash your environment variables in ~/.localrc. This means they'll stay out
 # of your main dotfiles repository (which may be public, like this one), but
@@ -135,3 +143,16 @@ eval "$(starship init zsh)"
 export GPG_TTY=$(tty)
 
 export PATH="$HOME/.local/bin:$PATH"
+
+# Add libpq (keg-only) to PATH for psql and other PostgreSQL client tools
+if [[ -d "$HOMEBREW_PREFIX/opt/libpq/bin" ]]; then
+  export PATH="$HOMEBREW_PREFIX/opt/libpq/bin:$PATH"
+fi
+
+# FNM environment — MUST be the last PATH-modifying line so the per-shell
+# multishell shim is prepended last and beats /usr/local/bin, /opt/homebrew/bin,
+# etc. With --use-on-cd, FNM also re-resolves $PATH on every directory change,
+# so even after this initial load the project's .nvmrc/.node-version/engines.node
+# wins. Combined with `typeset -U PATH` above, this is idempotent across
+# re-sources.
+eval "$(fnm env --use-on-cd --version-file-strategy=recursive --corepack-enabled --shell zsh)"
