@@ -354,6 +354,11 @@ cmd_install() {
 		DOT_MODE=install source "$DOTFILES/iterm2/install.sh"
 	fi
 
+	# Run herdr installer
+	if [ -f "$DOTFILES/herdr/install.sh" ]; then
+		DOT_MODE=install source "$DOTFILES/herdr/install.sh"
+	fi
+
 	# Run zsh installer
 	if [ -f "$DOTFILES/zsh/install.sh" ]; then
 		source "$DOTFILES/zsh/install.sh"
@@ -452,6 +457,11 @@ cmd_update() {
 	# Run iTerm2 installer in update mode
 	if [ -f "$DOTFILES/iterm2/install.sh" ]; then
 		DOT_MODE=update source "$DOTFILES/iterm2/install.sh"
+	fi
+
+	# Run herdr installer in update mode
+	if [ -f "$DOTFILES/herdr/install.sh" ]; then
+		DOT_MODE=update source "$DOTFILES/herdr/install.sh"
 	fi
 
 	# Update npm global packages (if FNM/Node is available)

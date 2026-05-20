@@ -161,6 +161,17 @@ The `iterm2/` topic installs uv-managed CLI tools that complement iTerm2 (e.g., 
 
 - Edit `UV_TOOLS=()` in `iterm2/install.sh` and re-run `dot install` or `dot update`
 
+### herdr CLI
+
+The `herdr/` topic installs the `herdr` CLI (terminal workspace manager for AI coding agents), which is distributed only via a curl installer (not Homebrew):
+
+- Installed via `curl -fsSL https://herdr.dev/install.sh | sh` (binary lands in `~/.local/bin`, already on `$PATH` via `system/path.zsh`)
+- Detection uses `command -v herdr`
+- Runs in both `dot install` and `dot update`:
+  - `dot install` (DOT_MODE=install): installs herdr if missing, otherwise skips
+  - `dot update` (DOT_MODE=update): installs if missing, otherwise self-updates via the built-in `herdr update` command
+- Failures emit a warning and continue — never abort the broader `dot` run
+
 ### Claude MCP Servers
 
 The `claude/` topic configures Model Context Protocol (MCP) servers for Claude Desktop and Claude Code:
