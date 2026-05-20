@@ -11,15 +11,15 @@ brew 'findutils'
 brew 'ack' # a grep-like source code search tool
 brew 'act' # GitHub Actions runner
 brew 'bun' # Node package manager
+brew 'fnm' # Node.js version manager and corepack installer
 brew 'gcc' # the GNU Compiler
+brew 'gh' # GitHub official CLI (replaces deprecated hub)
 brew 'git-delta' # syntax-highlighting pager for git and diff output
 brew 'git' # distributed revision control system
 brew 'go' # go programming language
 brew 'gpg' # GNU Privacy Guard
 brew 'grc' # colorize logfiles and command output
-brew 'fnm' # Node.js version manager and corepack installer
 # NOTE: If any formula installs node as a dependency, it will be removed by fnm/install.sh and bin/dot
-brew 'gh' # GitHub official CLI (replaces deprecated hub)
 brew 'imagemagick' # Image manipulation library
 brew 'jq' # Lightweight and flexible command-line JSON processor
 brew 'just' # Task runner
@@ -27,7 +27,7 @@ brew 'libgit2' # C library of Git core methods that is re-entrant and linkable
 brew 'mas' # CLI for installing app from Mac App Store
 brew 'mongodb-community', restart_service: false # NoSQL database (manual start: brew services start mongodb-community)
 brew 'openssl' # Cryptography and SSL/TLS Toolkit
-brew 'pi-coding-agent' # Customize agent harness
+# brew 'pi-coding-agent' # Customize agent harness
 brew 'postgresql', restart_service: false # SQL database (manual start: brew services start postgresql)
 brew 'pyenv' # Python virtual env
 brew 'readline' # Library for command-line editing
@@ -50,6 +50,7 @@ cask 'claude-code@latest' # AI programming friend
 cask 'cmux' # Ghostty-based terminal with vertical tabs
 cask 'cursor' # Write, edit, and chat about your code with AI
 cask 'discord' # VoIP and chat app
+cask 'docker-desktop' # Build containerised applications and microservices
 cask 'firefox' # Web browser
 cask 'font-fira-code-nerd-font' # Monospace font with programming ligatures
 cask 'font-jetbrains-mono-nerd-font' # Monospace font with programming ligatures
