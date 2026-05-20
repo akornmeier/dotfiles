@@ -165,7 +165,7 @@ The `iterm2/` topic installs uv-managed CLI tools that complement iTerm2 (e.g., 
 
 The `herdr/` topic installs the `herdr` CLI (terminal workspace manager for AI coding agents), which is distributed only via a curl installer (not Homebrew):
 
-- Installed via `curl -fsSL https://herdr.dev/install.sh | sh` (binary lands in `~/.local/bin`, already on `$PATH` via `system/path.zsh`)
+- Installed via `curl -fsSL https://herdr.dev/install.sh | sh` (binary lands in `~/.local/bin`; `system/path.zsh` adds that directory to `$PATH` for the user's zsh shell, so `herdr` is available in normal terminal use after a shell restart)
 - Detection uses `command -v herdr`
 - Runs in both `dot install` and `dot update`:
   - `dot install` (DOT_MODE=install): installs herdr if missing, otherwise skips

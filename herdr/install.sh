@@ -27,7 +27,9 @@ if command -v herdr &> /dev/null; then
 else
   echo "  📦 Installing herdr..."
   curl -fsSL https://herdr.dev/install.sh | sh 2>&1 | sed 's/^/    /'
-  if command -v herdr &> /dev/null; then
+  # PIPESTATUS indices: [0]=curl, [1]=sh installer, [2]=sed
+  installer_status="${PIPESTATUS[1]}"
+  if [ "$installer_status" -eq 0 ] && [ -x "$HOME/.local/bin/herdr" ]; then
     echo "  ✓ herdr installed"
   else
     echo "  ⚠️  Failed to install herdr (continuing)"
