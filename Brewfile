@@ -1,5 +1,6 @@
 cask_args appdir: '/Applications'
 
+tap 'manaflow-ai/cmux'
 tap 'mongodb/brew'
 tap 'oven-sh/bun'
 
@@ -25,13 +26,12 @@ brew 'jq' # Lightweight and flexible command-line JSON processor
 brew 'just' # Task runner
 brew 'libgit2' # C library of Git core methods that is re-entrant and linkable
 brew 'mas' # CLI for installing app from Mac App Store
-brew 'mongodb-community', restart_service: false # NoSQL database (manual start: brew services start mongodb-community)
 brew 'openssl' # Cryptography and SSL/TLS Toolkit
-# brew 'pi-coding-agent' # Customize agent harness
 brew 'postgresql', restart_service: false # SQL database (manual start: brew services start postgresql)
 brew 'pyenv' # Python virtual env
 brew 'readline' # Library for command-line editing
 brew 'redis', restart_service: false # In-memory database (manual start: brew services start redis)
+brew 'rtk' # CLI proxy to minimize LLM token consumption
 brew 'starship' # Cross-shell prompt for astronauts
 brew 'tmux' # Terminal multiplexer
 brew 'uv' # Extremely fast Python package installer and resolver
@@ -47,22 +47,24 @@ brew 'zsh' # UNIX shell (command interpreter)
 cask '1password' # Password manager
 cask 'claude' # AI programming friend
 cask 'claude-code@latest' # AI programming friend
-cask 'cmux' # Ghostty-based terminal with vertical tabs
+cask 'cmux' # Agentic-friendly terminal multiplexer
+cask 'codex' # Chad_100 in the CLI
 cask 'cursor' # Write, edit, and chat about your code with AI
 cask 'discord' # VoIP and chat app
 cask 'docker-desktop' # Build containerised applications and microservices
 cask 'firefox' # Web browser
 cask 'font-fira-code-nerd-font' # Monospace font with programming ligatures
 cask 'font-jetbrains-mono-nerd-font' # Monospace font with programming ligatures
+cask 'ghostty' # Fast terminal
 cask 'google-chrome' # Web browser
-cask 'ghostty' # Terminal emulator
 cask 'insomnia' # REST client
 cask 'iterm2' # Best terminal for agentic coding
 cask 'raycast' # Extendable launcher app
 cask 'readdle-spark' # Email client
 cask 'spotify' # Music streaming service
+cask 'supacode' # Worktree coding agents command center
+cask 'surfshark' # VPN client
 cask 'tableplus' # GUI for databases
-cask 'warp' # Terminal built for speed and safety
 cask 'zed' # Code editor
 cask 'zoom' # Video conferencing software
 

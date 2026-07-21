@@ -144,6 +144,8 @@ export GPG_TTY=$(tty)
 
 export PATH="$HOME/.local/bin:$PATH"
 
+export PATH="$HOME/.dotnet:$PATH"
+
 # Add libpq (keg-only) to PATH for psql and other PostgreSQL client tools
 if [[ -d "$HOMEBREW_PREFIX/opt/libpq/bin" ]]; then
   export PATH="$HOMEBREW_PREFIX/opt/libpq/bin:$PATH"
