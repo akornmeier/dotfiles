@@ -11,5 +11,5 @@ alias tkss='tmux kill-session -t'
 # prompting for user confirmation. Only use this in trusted, sandboxed
 # environments. Do not source this file on shared or production machines.
 
-# Claude Code Orchestration
+# Claude Code
 alias cldyo='claude --dangerously-skip-permissions'

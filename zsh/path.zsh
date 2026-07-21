@@ -6,4 +6,9 @@ case ":$PATH:" in
 esac
 # pnpm end
 
-export PATH="$HOME/.bun/bin:$PATH"
+# bun
+case ":$PATH:" in
+  *":$HOME/.bun/bin:"*) ;;
+  *) export PATH="$PATH:$HOME/.bun/bin" ;;
+esac
+# bun end

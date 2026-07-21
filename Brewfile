@@ -1,7 +1,6 @@
 cask_args appdir: '/Applications'
 
 tap 'manaflow-ai/cmux'
-tap 'mongodb/brew'
 tap 'oven-sh/bun'
 
 # gnu stuff
