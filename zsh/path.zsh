@@ -5,3 +5,10 @@ case ":$PATH:" in
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 # pnpm end
+
+# bun
+case ":$PATH:" in
+  *":$HOME/.bun/bin:"*) ;;
+  *) export PATH="$PATH:$HOME/.bun/bin" ;;
+esac
+# bun end
