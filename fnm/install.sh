@@ -21,12 +21,6 @@
 
 echo "📦 Setting up FNM and Node.js..."
 
-# Remove Homebrew's node if it was installed as a dependency
-if brew list node &>/dev/null; then
-  echo " Removing Homebrew's node (we use FNM instead)..."
-  brew uninstall --ignore-dependencies node 2>/dev/null || true
-fi
-
 # Install latest LTS version of Node.js using FNM
 echo "  Installing latest Node.js LTS version..."
 eval "$(fnm env --use-on-cd --version-file-strategy=recursive --corepack-enabled --shell bash)"

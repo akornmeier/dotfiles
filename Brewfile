@@ -19,13 +19,13 @@ brew 'git' # distributed revision control system
 brew 'go' # go programming language
 brew 'gpg' # GNU Privacy Guard
 brew 'grc' # colorize logfiles and command output
-# NOTE: If any formula installs node as a dependency, it will be removed by fnm/install.sh and bin/dot
 brew 'imagemagick' # Image manipulation library
 brew 'jq' # Lightweight and flexible command-line JSON processor
 brew 'just' # Task runner
 brew 'libgit2' # C library of Git core methods that is re-entrant and linkable
 brew 'mas' # CLI for installing app from Mac App Store
 brew 'openssl' # Cryptography and SSL/TLS Toolkit
+brew 'pi-coding-agent' # Customizable agent harness
 brew 'postgresql', restart_service: false # SQL database (manual start: brew services start postgresql)
 brew 'pyenv' # Python virtual env
 brew 'readline' # Library for command-line editing
