@@ -18,6 +18,9 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
+        with:
+          # Need full history + tags so `changeset tag` skips versions already tagged
+          fetch-depth: 0
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -36,6 +39,9 @@ jobs:
         uses: changesets/action@v1
         with:
           version: pnpm run version
+          # `changeset tag` pushes a vX.Y.Z git tag; the action then cuts a
+          # GitHub Release from the matching CHANGELOG.md section
+          publish: pnpm run release
           commit: 'chore: version packages'
           title: 'chore: version packages'
         env:
