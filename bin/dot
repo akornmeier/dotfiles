@@ -277,13 +277,6 @@ cmd_install() {
 		echo ""
 		echo -e "${BLUE}🔧 Setting up FNM and Node.js...${NC}"
 
-		# Remove Homebrew's node if it was installed as a dependency
-		if brew list node &>/dev/null; then
-			echo -e "  ${YELLOW}⚠️  Removing Homebrew's Node (we use FNM instead)${NC}"
-			brew uninstall --ignore-dependencies node 2>/dev/null || true
-			echo -e "  ${GREEN}✓ Homebrew Node removed${NC}"
-		fi
-
 		# Set up FNM environment
 		eval "$(fnm env --use-on-cd --version-file-strategy=recursive --corepack-enabled --shell bash)"
 
@@ -297,31 +290,6 @@ cmd_install() {
 			fnm install --lts
 			fnm default lts-latest
 			echo -e "  ${GREEN}✓ Installed Node.js $(fnm current)${NC}"
-		fi
-
-		# Create or update symlinks to the default FNM Node version for system-wide access
-		SYMLINKS_NEEDED=false
-		for cmd in node npm npx corepack; do
-			if [ ! -L "/usr/local/bin/$cmd" ] || [ "$(readlink /usr/local/bin/$cmd)" != "$HOME/.local/share/fnm/aliases/default/bin/$cmd" ]; then
-				SYMLINKS_NEEDED=true
-				break
-			fi
-		done
-
-		if [ "$SYMLINKS_NEEDED" = true ]; then
-			echo ""
-			echo "  Creating symlinks for global Node.js access..."
-
-			ensure_sudo
-
-			sudo mkdir -p /usr/local/bin
-			sudo ln -sf "$HOME/.local/share/fnm/aliases/default/bin/node" /usr/local/bin/node
-			sudo ln -sf "$HOME/.local/share/fnm/aliases/default/bin/npm" /usr/local/bin/npm
-			sudo ln -sf "$HOME/.local/share/fnm/aliases/default/bin/npx" /usr/local/bin/npx
-			sudo ln -sf "$HOME/.local/share/fnm/aliases/default/bin/corepack" /usr/local/bin/corepack
-			echo -e "  ${GREEN}✓ Symlinks created${NC}"
-		else
-			echo -e "  ${GREEN}✓ Symlinks already configured correctly${NC}"
 		fi
 
 		echo -e "  ${YELLOW}- 📦 node: $(node --version)${NC}"
@@ -438,15 +406,6 @@ cmd_update() {
 		echo -e "  ${GREEN}✓ Missing packages installed${NC}"
 	else
 		echo -e "  ${GREEN}✓ All Brewfile packages are installed${NC}"
-	fi
-
-	# Remove Homebrew's node if it was installed as a dependency (we use FNM)
-	if brew list node &>/dev/null; then
-		echo ""
-		echo -e "  ${YELLOW}⚠️  Detected Homebrew Node version${NC}"
-		echo "  Removing in favor of FNM version..."
-		brew uninstall --ignore-dependencies node 2>/dev/null || true
-		echo -e "  ${GREEN}✓ Homebrew Node removed${NC}"
 	fi
 
 	echo ""

@@ -19,7 +19,6 @@ brew 'git' # distributed revision control system
 brew 'go' # go programming language
 brew 'gpg' # GNU Privacy Guard
 brew 'grc' # colorize logfiles and command output
-# NOTE: If any formula installs node as a dependency, it will be removed by fnm/install.sh and bin/dot
 brew 'imagemagick' # Image manipulation library
 brew 'jq' # Lightweight and flexible command-line JSON processor
 brew 'just' # Task runner
