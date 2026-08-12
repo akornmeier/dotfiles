@@ -94,23 +94,24 @@ if type brew &>/dev/null; then
 fi
 
 # Load zsh plugins from Homebrew (check existence before sourcing)
-[[ -f "$HOMEBREW_PREFIX/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh" ]] && \
+if [[ -f "$HOMEBREW_PREFIX/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh" ]]; then
   source "$HOMEBREW_PREFIX/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh"
 
-# zsh-autocomplete pins ~autocomplete to a versioned Cellar dir. `brew upgrade`
-# deletes it under running shells, so autoloading z-async fails on every
-# keystroke. Repoint fpath at the new install instead.
-# ponytail: keeps already-loaded functions from the old version; run `exec zsh`
-# if a release ever changes the z-async interface.
-_autocomplete_repair_fpath() {
-  [[ -d ~autocomplete ]] && return
-  local dir=$HOMEBREW_PREFIX/share/zsh-autocomplete
-  [[ -d $dir ]] || return
-  fpath=( $dir/z-async $dir/Completions ${fpath[@]:#*/zsh-autocomplete/*} )
-  hash -d autocomplete=$dir zsh-autocomplete=$dir
-}
-autoload -Uz add-zsh-hook
-add-zsh-hook precmd _autocomplete_repair_fpath
+  # zsh-autocomplete pins ~autocomplete to a versioned Cellar dir. `brew upgrade`
+  # deletes it under running shells, so autoloading z-async fails on every
+  # keystroke. Repoint fpath at the new install instead.
+  # Caveat: keeps already-loaded functions from the old version; run `exec zsh`
+  # if a release ever changes the z-async interface.
+  _autocomplete_repair_fpath() {
+    [[ -d ~autocomplete ]] && return
+    local dir=$HOMEBREW_PREFIX/share/zsh-autocomplete
+    [[ -d $dir ]] || return
+    fpath=( $dir/z-async $dir/Completions ${fpath[@]:#*/zsh-autocomplete/*} )
+    hash -d autocomplete=$dir zsh-autocomplete=$dir
+  }
+  autoload -Uz add-zsh-hook
+  add-zsh-hook precmd _autocomplete_repair_fpath
+fi
 
 [[ -f "$HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] && \
   source "$HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
