@@ -1,5 +1,23 @@
 # tk-dotfiles
 
+## 2.4.0
+
+### Minor Changes
+
+- 97dc6fc: Add herdr topic installer that auto-installs the herdr CLI via the upstream curl installer when missing, and self-updates it via the built-in `herdr update` command on dot update.
+- 88ebe11: Add iterm2 and bun to Brewfile, expand global gitignore, bump pnpm to 10.33.0, fix zsh-completions fpath, and add --verbose to cldyo alias. CI workflows now read pnpm version from packageManager field.
+- 8f2dad0: Add iterm2 topic installer that auto-installs the it2 CLI via uv tool when iTerm2 is present, and upgrades it on dot update. Introduces a DOT_MODE env signal so topic installers can branch on install vs update lifecycle.
+- c2a5a22: Add cmux and rtk to homebrew
+
+### Patch Changes
+
+- d1912fc: Stop `dot` from uninstalling Homebrew's `node`, which broke every formula that depends on it. `brew uninstall --ignore-dependencies node` ran in `cmd_install`, `cmd_update`, and `fnm/install.sh`, so each `dot` run left `pi-coding-agent` and `mongosh` with a dangling `/opt/homebrew/opt/node/bin/node` shebang (`bad interpreter`). The removal was already obsolete: FNM's per-shell shim outranks `/opt/homebrew/bin` on `$PATH`, so Homebrew's node cannot shadow it. Also drops the `/usr/local/bin/{node,npm,npx,corepack}` symlink block from `cmd_install`, which recreated the exact symlinks `fnm/install.sh` deletes as legacy moments later in the same run.
+- a79b486: Stop `gsync` from prompting to delete branches that are checked out in a git worktree. `git branch -d/-D` refuses those with `error: cannot delete branch 'x' used by worktree at '...'`, so the prompt could only ever fail — and under `set -e` that failure aborted the rest of the run (pnpm install/build/test never happened). `gsync` now reads `git worktree list --porcelain` and skips such branches with the worktree path in the message.
+- 3aa9c4b: chore: update brewfile
+- 9700ebc: Add `$PNPM_HOME/bin` to `$PATH` so shims from pnpm global installs resolve, and drop the `pi-coding-agent` formula from the Brewfile. `pi-coding-agent` is now installed via pnpm rather than Homebrew; the install itself stays manual.
+- f0ed6bb: Keep running shells working when Homebrew upgrades `zsh-autocomplete`. The plugin pins its `~autocomplete` named directory to a versioned Cellar path at load time, so `brew upgrade` deletes that path out from under already-open shells and the deferred autoload of `z-async` fails on every line redraw (`.autocomplete:async:complete:61: z-async: function definition file not found`). A `precmd` hook now notices the dead directory and repoints `fpath` at `$HOMEBREW_PREFIX/share/zsh-autocomplete`, a stable directory of symlinks rather than a versioned one, so a repaired shell is also immune to later upgrades.
+- 7ef62aa: Fix `gsync` resolving to GNU `sync` from Homebrew coreutils instead of `bin/gsync`. `$DOTFILES/bin` now precedes `/usr/local/bin` in `$PATH`, and the relative `./bin` entry was removed so scripts in an arbitrary repo's `bin/` directory are no longer on `$PATH` by name.
+
 ## 2.3.0
 
 ### Minor Changes
