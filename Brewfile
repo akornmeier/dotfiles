@@ -25,7 +25,6 @@ brew 'just' # Task runner
 brew 'libgit2' # C library of Git core methods that is re-entrant and linkable
 brew 'mas' # CLI for installing app from Mac App Store
 brew 'openssl' # Cryptography and SSL/TLS Toolkit
-brew 'pi-coding-agent' # Customizable agent harness
 brew 'postgresql', restart_service: false # SQL database (manual start: brew services start postgresql)
 brew 'pyenv' # Python virtual env
 brew 'readline' # Library for command-line editing
