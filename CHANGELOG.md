@@ -1,5 +1,12 @@
 # tk-dotfiles
 
+## 2.4.2
+
+### Patch Changes
+
+- 79e7092: Fix CI: read the Node version from `.node-version` instead of hardcoding Node 20, which is below the floor required by `@changesets/cli` v3 and `@commitlint` v21
+- 6107602: Bump dev and runtime dependencies: @changesets/cli 2→3, @commitlint/cli and config-conventional 20→21, oxlint 0.13→1.78, prettier 3.9.6, figlet 1.11.4
+
 ## 2.4.1
 
 ### Patch Changes
