@@ -19,6 +19,9 @@ fi
 # Find local branches with no matching remote branch
 remote_branches=$(git branch -r | grep -v HEAD | sed 's|^[^/]*/||' | sort -u)
 mapfile -t local_branches < <(git branch --format '%(refname:short)')
+# branch<TAB>worktree path for every branch checked out in a worktree
+worktree_branches=$(git worktree list --porcelain |
+  awk '/^worktree /{p=$2} /^branch /{sub("refs/heads/","",$2); print $2"\t"p}')
 stale_branches=()
 
 for branch in "${local_branches[@]}"; do
@@ -40,6 +43,13 @@ if [[ ${#stale_branches[@]} -gt 0 ]]; then
   for branch in "${stale_branches[@]}"; do
     if [[ "$branch" == "$current_branch" ]]; then
       echo "  ⚠ $branch (skipped - currently checked out)"
+      continue
+    fi
+
+    # git refuses to delete a branch checked out in a worktree
+    worktree_path=$(awk -v b="$branch" -F'\t' '$1 == b { print $2 }' <<<"$worktree_branches")
+    if [[ -n "$worktree_path" ]]; then
+      echo "  ⚠ $branch (skipped - checked out in worktree at $worktree_path)"
       continue
     fi
 
