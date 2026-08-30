@@ -30,6 +30,7 @@ brew 'pyenv' # Python virtual env
 brew 'readline' # Library for command-line editing
 brew 'redis', restart_service: false # In-memory database (manual start: brew services start redis)
 brew 'rtk' # CLI proxy to minimize LLM token consumption
+brew 'rust' # Rust toolchain (rustc, cargo)
 brew 'starship' # Cross-shell prompt for astronauts
 brew 'tmux' # Terminal multiplexer
 brew 'uv' # Extremely fast Python package installer and resolver
