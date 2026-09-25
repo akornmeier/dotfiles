@@ -1,0 +1,45 @@
+# Arch/AUR packages for Linux (Omarchy), installed with `yay -S --needed`.
+# The Linux counterpart of the Brewfile. One package per line; `#` starts a comment.
+#
+# Already provided by Omarchy, so not listed: git, gnupg, jq, imagemagick,
+# postgresql (psql), starship, tmux, herdr, docker, 1password, chromium,
+# ripgrep (replaces ack), fzf, zoxide, eza, bat.
+#
+# Runtimes (node, pnpm, go, bun, uv, python) come from mise, see linux/mise.toml.
+#
+# macOS-only casks with no Linux build: claude (desktop), cmux, iterm2,
+# raycast (use the Omarchy menu), readdle-spark, supacode, mas apps.
+# tableplus is dropped: its AUR package fails to install.
+
+# shell
+zsh
+zsh-autosuggestions
+zsh-completions
+zsh-history-substring-search
+zsh-syntax-highlighting
+zsh-autocomplete-git # AUR
+zsh-you-should-use # AUR
+
+# cli
+act # GitHub Actions runner
+git-delta # syntax-highlighting pager for git and diff output
+git-lfs
+grc # colorize logfiles and command output
+just # Task runner
+rtk # AUR: CLI proxy to minimize LLM token consumption
+valkey # Redis-compatible in-memory database (Arch replaced redis with valkey)
+wget
+
+# apps
+cursor-bin # AUR
+discord
+firefox
+ghostty
+google-chrome # AUR
+insomnia-bin # AUR
+spotify # AUR
+surfshark-client # AUR
+ttf-firacode-nerd
+ttf-jetbrains-mono-nerd
+zed
+zoom # AUR

@@ -7,17 +7,23 @@ export DOTFILES=$HOME/.dotfiles
 # and prevents the "duplicated PATH" we saw with two fnm_multishells entries.
 typeset -U PATH path
 
-# Set HOMEBREW_PREFIX based on architecture
-if [[ -d "/opt/homebrew" ]]; then
-  export HOMEBREW_PREFIX="/opt/homebrew"
-elif [[ -d "/usr/local" ]]; then
-  export HOMEBREW_PREFIX="/usr/local"
-else
-  export HOMEBREW_PREFIX="$(brew --prefix 2>/dev/null)"
-fi
+if [[ "$OSTYPE" == darwin* ]]; then
+  # Set HOMEBREW_PREFIX based on architecture
+  if [[ -d "/opt/homebrew" ]]; then
+    export HOMEBREW_PREFIX="/opt/homebrew"
+  elif [[ -d "/usr/local" ]]; then
+    export HOMEBREW_PREFIX="/usr/local"
+  else
+    export HOMEBREW_PREFIX="$(brew --prefix 2>/dev/null)"
+  fi
+  ZSH_PLUGINS_DIR="$HOMEBREW_PREFIX/share"
 
-# your project folder that we can `c [tab]` to
-export PROJECTS=~/Code
+  # your project folder that we can `c [tab]` to
+  export PROJECTS=~/Code
+else
+  ZSH_PLUGINS_DIR=/usr/share/zsh/plugins
+  export PROJECTS=~/Projects
+fi
 
 # Aliases
 alias zshconfig="code ~/.zshrc"
@@ -59,7 +65,9 @@ if [[ -d "$ZSH" ]]; then
   # Standard plugins can be found in $ZSH/plugins/
   # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 
-  plugins=(aliases bun deno fnm gh z)
+  plugins=(aliases bun deno gh)
+  # On Linux, mise replaces fnm and Omarchy's zoxide provides `z`.
+  [[ "$OSTYPE" == darwin* ]] && plugins+=(fnm z)
 
   source "$ZSH/oh-my-zsh.sh"
 fi
@@ -94,13 +102,13 @@ done
 
 if type brew &>/dev/null; then
   FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
-  autoload -Uz compinit
-  compinit
 fi
+autoload -Uz compinit
+compinit
 
-# Load zsh plugins from Homebrew (check existence before sourcing)
-if [[ -f "$HOMEBREW_PREFIX/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh" ]]; then
-  source "$HOMEBREW_PREFIX/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh"
+# Load zsh plugins from Homebrew or pacman (check existence before sourcing)
+if [[ -f "$ZSH_PLUGINS_DIR/zsh-autocomplete/zsh-autocomplete.plugin.zsh" ]]; then
+  source "$ZSH_PLUGINS_DIR/zsh-autocomplete/zsh-autocomplete.plugin.zsh"
 
   # zsh-autocomplete pins ~autocomplete to a versioned Cellar dir. `brew upgrade`
   # deletes it under running shells, so autoloading z-async fails on every
@@ -109,7 +117,7 @@ if [[ -f "$HOMEBREW_PREFIX/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh" ]
   # if a release ever changes the z-async interface.
   _autocomplete_repair_fpath() {
     [[ -d ~autocomplete ]] && return
-    local dir=$HOMEBREW_PREFIX/share/zsh-autocomplete
+    local dir=$ZSH_PLUGINS_DIR/zsh-autocomplete
     [[ -d $dir ]] || return
     fpath=( $dir/z-async $dir/Completions ${fpath[@]:#*/zsh-autocomplete/*} )
     hash -d autocomplete=$dir zsh-autocomplete=$dir
@@ -118,17 +126,17 @@ if [[ -f "$HOMEBREW_PREFIX/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh" ]
   add-zsh-hook precmd _autocomplete_repair_fpath
 fi
 
-[[ -f "$HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] && \
-  source "$HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+[[ -f "$ZSH_PLUGINS_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] && \
+  source "$ZSH_PLUGINS_DIR/zsh-autosuggestions/zsh-autosuggestions.zsh"
 
-[[ -f "$HOMEBREW_PREFIX/share/zsh-you-should-use/you-should-use.plugin.zsh" ]] && \
-  source "$HOMEBREW_PREFIX/share/zsh-you-should-use/you-should-use.plugin.zsh"
+[[ -f "$ZSH_PLUGINS_DIR/zsh-you-should-use/you-should-use.plugin.zsh" ]] && \
+  source "$ZSH_PLUGINS_DIR/zsh-you-should-use/you-should-use.plugin.zsh"
 
-[[ -f "$HOMEBREW_PREFIX/share/zsh-history-substring-search/zsh-history-substring-search.zsh" ]] && \
-  source "$HOMEBREW_PREFIX/share/zsh-history-substring-search/zsh-history-substring-search.zsh"
+[[ -f "$ZSH_PLUGINS_DIR/zsh-history-substring-search/zsh-history-substring-search.zsh" ]] && \
+  source "$ZSH_PLUGINS_DIR/zsh-history-substring-search/zsh-history-substring-search.zsh"
 
-[[ -f "$HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]] && \
-  source "$HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+[[ -f "$ZSH_PLUGINS_DIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]] && \
+  source "$ZSH_PLUGINS_DIR/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
 bindkey -M menuselect '\r' .accept-line
 
@@ -178,4 +186,10 @@ fi
 # so even after this initial load the project's .nvmrc/.node-version/engines.node
 # wins. Combined with `typeset -U PATH` above, this is idempotent across
 # re-sources.
-eval "$(fnm env --use-on-cd --version-file-strategy=recursive --corepack-enabled --shell zsh)"
+#
+# On Linux, mise (Omarchy's version manager) plays the same role.
+if [[ "$OSTYPE" == darwin* ]]; then
+  eval "$(fnm env --use-on-cd --version-file-strategy=recursive --corepack-enabled --shell zsh)"
+else
+  eval "$(mise activate zsh)"
+fi

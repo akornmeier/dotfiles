@@ -18,6 +18,7 @@ NC='\033[0m' # No Color
 parentDirectory="$(cd "$( dirname "${BASH_SOURCE[0]-$0}" )" && pwd -P)"
 dotfilesDirectory="$(cd "$( dirname "$parentDirectory" )" && pwd -P)"
 export DOTFILES="$dotfilesDirectory"
+OS="$(uname -s)"
 
 # Helper functions
 show_banner() {
@@ -53,8 +54,8 @@ displayUsageAndExit() {
 	echo "Usage: dot [command] [options]"
 	echo ""
 	echo "Commands:"
-	echo "  bootstrap     First-time setup (gitconfig, symlinks, Homebrew)"
-	echo "  install       Full installation (Homebrew packages, configs, macOS defaults)"
+	echo "  bootstrap     First-time setup (gitconfig, symlinks, package manager)"
+	echo "  install       Full installation (packages, configs, OS defaults)"
 	echo "  update        Smart updates (default - only update what's needed)"
 	echo ""
 	echo "Options:"
@@ -90,6 +91,8 @@ setup_gitconfig () {
 		git_credential='cache'
 		if [ "$(uname -s)" == "Darwin" ]; then
 			git_credential='osxkeychain'
+		elif command -v gh &> /dev/null; then
+			git_credential='!gh auth git-credential'
 		fi
 
 		user ' - What is your GitHub author name?'
@@ -217,15 +220,19 @@ cmd_bootstrap() {
 	setup_gitconfig
 	install_dotfiles false
 
-	echo ""
-	echo "🍺 Checking for Homebrew..."
-	if command -v brew &> /dev/null; then
-		echo -e "  ${GREEN}✓ Homebrew is already installed${NC}"
-	else
+	if [ "$OS" == "Darwin" ]; then
 		echo ""
-		echo "  Installing Homebrew..."
-		/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-		echo -e "  ${GREEN}✓ Homebrew installed${NC}"
+		echo "🍺 Checking for Homebrew..."
+		if command -v brew &> /dev/null; then
+			echo -e "  ${GREEN}✓ Homebrew is already installed${NC}"
+		else
+			echo ""
+			echo "  Installing Homebrew..."
+			/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+			echo -e "  ${GREEN}✓ Homebrew installed${NC}"
+		fi
+	elif ! command -v yay &> /dev/null; then
+		fail "yay not found — this Linux setup expects Omarchy (Arch + yay)"
 	fi
 
 	echo ""
@@ -255,25 +262,29 @@ cmd_install() {
 	# Ensure symlinks are up to date
 	install_dotfiles true
 
-	echo ""
-	echo "🍺 Installing Homebrew packages..."
-	echo ""
-	cd "$DOTFILES"
-	brew bundle install
-	echo -e "  ${GREEN}✓ Homebrew packages installed${NC}"
+	if [ "$OS" == "Darwin" ]; then
+		echo ""
+		echo "🍺 Installing Homebrew packages..."
+		echo ""
+		cd "$DOTFILES"
+		brew bundle install
+		echo -e "  ${GREEN}✓ Homebrew packages installed${NC}"
+	fi
 
 	echo ""
 	echo "============================================================"
 	echo -e "${BLUE}⚙️  Running installer scripts...${NC}"
 	echo "============================================================"
 
-	# Run macOS installer first
-	if [ -f "$DOTFILES/macos/install.sh" ]; then
+	# Run the OS installer first
+	if [ "$OS" == "Darwin" ] && [ -f "$DOTFILES/macos/install.sh" ]; then
 		source "$DOTFILES/macos/install.sh"
+	elif [ "$OS" == "Linux" ]; then
+		DOT_MODE=install source "$DOTFILES/linux/install.sh"
 	fi
 
-	# Run FNM installer
-	if [ -f "$DOTFILES/fnm/install.sh" ]; then
+	# Run FNM installer (macOS only; Linux uses mise via linux/install.sh)
+	if [ "$OS" == "Darwin" ] && [ -f "$DOTFILES/fnm/install.sh" ]; then
 		echo ""
 		echo -e "${BLUE}🔧 Setting up FNM and Node.js...${NC}"
 
@@ -317,8 +328,8 @@ cmd_install() {
 		fi
 	fi
 
-	# Run herdr installer
-	if [ -f "$DOTFILES/herdr/install.sh" ]; then
+	# Run herdr installer (on Linux herdr is a pacman package)
+	if [ "$OS" == "Darwin" ] && [ -f "$DOTFILES/herdr/install.sh" ]; then
 		DOT_MODE=install source "$DOTFILES/herdr/install.sh"
 	fi
 
@@ -333,7 +344,7 @@ cmd_install() {
 	fi
 
 	# Set macOS defaults
-	if [ -f "$DOTFILES/macos/set-defaults.sh" ]; then
+	if [ "$OS" == "Darwin" ] && [ -f "$DOTFILES/macos/set-defaults.sh" ]; then
 		echo ""
 		echo "============================================================"
 		echo -e "${BLUE}🍏 Configuring macOS defaults...${NC}"
@@ -366,50 +377,54 @@ cmd_update() {
 	# Check and update symlinks
 	install_dotfiles true
 
-	echo ""
-	echo "============================================================"
-	echo -e "${BLUE}🍺 Updating Homebrew...${NC}"
-	echo "============================================================"
-
-	echo ""
-	echo "🔍 Checking for Homebrew updates..."
-	echo ""
-	brew update
-	echo -e "  ${GREEN}✓ Homebrew updated${NC}"
-
-	echo ""
-	echo "📦 Checking for package updates..."
-	# Check if there are any outdated packages before upgrading
-	OUTDATED=$(brew outdated)
-	if [ -n "$OUTDATED" ]; then
-		echo "$OUTDATED" | sed 's/^/  /'
+	if [ "$OS" == "Darwin" ]; then
 		echo ""
-		brew upgrade
-		echo -e "  ${GREEN}✓ Packages upgraded${NC}"
-	else
-		echo -e "  ${GREEN}✓ All packages are up to date${NC}"
+		echo "============================================================"
+		echo -e "${BLUE}🍺 Updating Homebrew...${NC}"
+		echo "============================================================"
+
+		echo ""
+		echo "🔍 Checking for Homebrew updates..."
+		echo ""
+		brew update
+		echo -e "  ${GREEN}✓ Homebrew updated${NC}"
+
+		echo ""
+		echo "📦 Checking for package updates..."
+		# Check if there are any outdated packages before upgrading
+		OUTDATED=$(brew outdated)
+		if [ -n "$OUTDATED" ]; then
+			echo "$OUTDATED" | sed 's/^/  /'
+			echo ""
+			brew upgrade
+			echo -e "  ${GREEN}✓ Packages upgraded${NC}"
+		else
+			echo -e "  ${GREEN}✓ All packages are up to date${NC}"
+		fi
+
+		echo ""
+		echo "📦 Checking Brewfile for missing packages..."
+		cd "$DOTFILES"
+		# Use brew bundle check to see if anything is missing
+		if ! brew bundle check &>/dev/null; then
+			echo ""
+			echo "  Installing missing packages..."
+			brew bundle install
+			echo -e "  ${GREEN}✓ Missing packages installed${NC}"
+		else
+			echo -e "  ${GREEN}✓ All Brewfile packages are installed${NC}"
+		fi
+
+		echo ""
+		echo "🧹 Cleaning up Homebrew..."
+		brew cleanup
+		echo -e "  ${GREEN}✓ Cleanup complete${NC}"
+	elif [ "$OS" == "Linux" ]; then
+		DOT_MODE=update source "$DOTFILES/linux/install.sh"
 	fi
 
-	echo ""
-	echo "📦 Checking Brewfile for missing packages..."
-	cd "$DOTFILES"
-	# Use brew bundle check to see if anything is missing
-	if ! brew bundle check &>/dev/null; then
-		echo ""
-		echo "  Installing missing packages..."
-		brew bundle install
-		echo -e "  ${GREEN}✓ Missing packages installed${NC}"
-	else
-		echo -e "  ${GREEN}✓ All Brewfile packages are installed${NC}"
-	fi
-
-	echo ""
-	echo "🧹 Cleaning up Homebrew..."
-	brew cleanup
-	echo -e "  ${GREEN}✓ Cleanup complete${NC}"
-
-	# Run herdr installer in update mode
-	if [ -f "$DOTFILES/herdr/install.sh" ]; then
+	# Run herdr installer in update mode (on Linux herdr is a pacman package)
+	if [ "$OS" == "Darwin" ] && [ -f "$DOTFILES/herdr/install.sh" ]; then
 		DOT_MODE=update source "$DOTFILES/herdr/install.sh"
 	fi
 

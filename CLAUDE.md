@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-This is a macOS dotfiles repository for managing development environment configuration. It uses a topic-based organization where each topic (zsh, git, macos, etc.) contains related configuration files and scripts.
+This is a macOS (and Omarchy Linux) dotfiles repository for managing development environment configuration. It uses a topic-based organization where each topic (zsh, git, macos, etc.) contains related configuration files and scripts.
 
 ## Core Commands
 
@@ -63,6 +63,7 @@ The repository is organized by "topics" (directories), where each topic contains
 - **zsh/**: Zsh configuration and Oh My Zsh setup
 - **git/**: Git configuration and aliases
 - **macos/**: macOS-specific settings and defaults
+- **linux/**: Omarchy/Arch setup (`packages` for yay, `mise.toml`, `install.sh`, `omarchy.zsh`); `bin/dot` branches on `uname -s`. `linux/*.zsh` files must `return` early off Linux, because every `*.zsh` file is loaded on both OSes
 - **fnm/**: Fast Node Manager configuration
 - **claude/**: Claude Desktop and Claude Code MCP server configuration
 - **functions/**: Reusable shell functions
