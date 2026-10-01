@@ -186,6 +186,29 @@ Quickly open your dotfiles directory in your default editor (`$EDITOR`).
 
 You can find this script in `bin/dot`.
 
+## Git Sync and Branch Cleanup
+
+`gsync` fetches and prunes remote refs, pulls when on the default branch, and cleans
+up local branches without a matching remote branch. Branches checked out in any
+worktree are skipped.
+
+Cleanup checks the fetched `origin/<default-branch>`, not a potentially stale local
+branch. It deletes without prompting when:
+
+- The branch tip is an ancestor of the remote default branch.
+- Both tips have identical file trees, including squash merges.
+- GitHub CLI confirms a merged PR to the default branch from the same repository,
+  with exactly the local branch tip and a merge commit in the remote default
+  branch's history.
+
+Otherwise, it reports that it could not confirm the changes landed and asks before
+deleting (default: no). Missing GitHub CLI, authentication/API failures, or extra
+local commits do not count as proof of a merge.
+
+In pnpm projects, `gsync` also runs install, build, and test after cleanup.
+Run `pnpm test` (or `bash script/test-gsync`) to test cleanup in temporary Git repos;
+GitHub responses are stubbed and no working repositories are changed.
+
 ## Version Management
 
 This project uses [Changesets](https://github.com/changesets/changesets) to manage versions and releases.

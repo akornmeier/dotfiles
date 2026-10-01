@@ -1,0 +1,186 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Real Git histories in disposable repos; only GitHub metadata is stubbed.
+root=$(cd "$(dirname "$0")/.." && pwd)
+tmp=$(mktemp -d)
+trap 'rm -rf "$tmp"' EXIT
+export GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG_GLOBAL=/dev/null
+export GIT_AUTHOR_NAME=Test GIT_AUTHOR_EMAIL=test@example.com
+export GIT_COMMITTER_NAME=Test GIT_COMMITTER_EMAIL=test@example.com
+export GIT_TERMINAL_PROMPT=0
+mkdir -p "$tmp/bin"
+export PATH="$tmp/bin:$PATH"
+export GH_ROWS="$tmp/prs" GH_CALLS="$tmp/gh-calls"
+cat > "$tmp/bin/gh" <<'SH'
+#!/usr/bin/env bash
+set -eu
+printf '%s\n' "$*" >> "$GH_CALLS"
+# Ensure lookups target origin and the right head/base, not gh's default repo.
+[[ "$*" == "pr list --repo "*" --state merged --base main --head feature --json headRefOid,mergeCommit,isCrossRepository --jq "* ]]
+[[ " $* " == *" --repo $(git remote get-url origin) "* ]]
+[[ "${GH_FAIL:-0}" == 0 ]] || exit 1
+cat "$GH_ROWS"
+SH
+chmod +x "$tmp/bin/gh"
+
+setup() {
+  local name=$1
+  mkdir "$tmp/$name"
+  cd "$tmp/$name"
+  git init -q --bare --initial-branch=main remote.git
+  git init -q --initial-branch=main repo
+  cd repo
+  git remote add origin "$tmp/$name/remote.git"
+  echo base > base.txt
+  git add . && git commit -qm base
+  git push -q -u origin main
+  base=$(git rev-parse HEAD)
+  git checkout -qb feature
+  echo first > feature.txt
+  git add . && git commit -qm first
+  echo second >> feature.txt
+  git commit -qam second
+  tip=$(git rev-parse HEAD)
+  git push -q -u origin feature
+  git checkout -q main
+  : > "$GH_ROWS"
+  : > "$GH_CALLS"
+  unset GH_FAIL
+}
+
+squash() {
+  git merge -q --squash feature >/dev/null
+  git commit -qm squash
+  merge=$(git rev-parse HEAD)
+}
+
+advance() {
+  echo later > later.txt
+  git add . && git commit -qm later
+}
+
+publish() {
+  git push -q origin main
+  git push -q origin --delete feature
+}
+
+metadata() {
+  printf '%s\t%s\t%s\n' "$tip" "$merge" "${1:-false}" > "$GH_ROWS"
+}
+
+run_gsync() {
+  printf '%s' "${1:-n}" | bash "$root/bin/gsync" > "$tmp/output" 2>&1 || {
+    cat "$tmp/output"
+    return 1
+  }
+}
+
+expect_deleted() {
+  if git show-ref --verify --quiet refs/heads/feature; then
+    cat "$tmp/output"
+    echo "FAIL: $name retained feature" >&2
+    exit 1
+  fi
+  if grep -q 'Could not confirm' "$tmp/output"; then
+    cat "$tmp/output"
+    echo "FAIL: $name required confirmation" >&2
+    exit 1
+  fi
+}
+
+expect_kept() {
+  git show-ref --verify --quiet refs/heads/feature || {
+    cat "$tmp/output"
+    echo "FAIL: $name deleted feature" >&2
+    exit 1
+  }
+}
+
+for name in normal squash-identical squash-advanced stale-main extra-local wrong-tip missing-merge fork no-pr gh-failure worktree current eof approve; do
+  setup "$name"
+  case "$name" in
+    normal)
+      git merge -q --no-ff feature -m merge
+      publish
+      run_gsync
+      expect_deleted
+      ;;
+    squash-identical)
+      squash
+      publish
+      run_gsync
+      expect_deleted
+      [[ ! -s "$GH_CALLS" ]]
+      ;;
+    squash-advanced)
+      squash
+      metadata
+      advance
+      publish
+      run_gsync
+      expect_deleted
+      [[ -s "$GH_CALLS" ]]
+      ;;
+    stale-main)
+      git merge -q --ff-only feature
+      publish
+      git reset -q --hard "$base"
+      git checkout -qb working
+      run_gsync
+      expect_deleted
+      [[ $(git rev-parse main) == "$base" ]]
+      ;;
+    extra-local|wrong-tip|missing-merge|fork|no-pr|gh-failure)
+      squash
+      advance
+      publish
+      case "$name" in
+        extra-local)
+          metadata
+          git checkout -q feature
+          echo local >> feature.txt
+          git commit -qam local
+          git checkout -q main
+          ;;
+        wrong-tip) tip=$base; metadata ;;
+        missing-merge) merge=$tip; metadata ;;
+        fork) metadata true ;;
+        no-pr) : ;;
+        gh-failure) metadata; export GH_FAIL=1 ;;
+      esac
+      run_gsync
+      expect_kept
+      grep -q 'Could not confirm' "$tmp/output"
+      ;;
+    worktree)
+      squash
+      publish
+      git worktree add -q "$tmp/$name/other" feature
+      run_gsync
+      expect_kept
+      grep -q 'skipped - checked out in worktree' "$tmp/output"
+      [[ ! -s "$GH_CALLS" ]]
+      ;;
+    current)
+      publish
+      git checkout -q feature
+      run_gsync
+      expect_kept
+      grep -q 'skipped - currently checked out' "$tmp/output"
+      ;;
+    eof)
+      publish
+      bash "$root/bin/gsync" < /dev/null > "$tmp/output" 2>&1
+      expect_kept
+      grep -q 'gsync complete' "$tmp/output"
+      ;;
+    approve)
+      publish
+      run_gsync y
+      ! git show-ref --verify --quiet refs/heads/feature
+      grep -q 'Force deleted' "$tmp/output"
+      ;;
+  esac
+  echo "PASS: $name"
+done
