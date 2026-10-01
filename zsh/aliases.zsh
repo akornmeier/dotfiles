@@ -2,14 +2,11 @@
 alias l='ls -l'
 alias reload='source ~/.zshrc'
 
-# Flush DNS Cache
-if [[ "$OSTYPE" == darwin* ]]; then
-  alias dnsflush='dscacheutil -flushcache; sudo killall -HUP mDNSResponder'
-  alias hosts='code /private/etc/hosts'
-else
-  alias dnsflush='resolvectl flush-caches'
-  alias hosts='sudoedit /etc/hosts'
-fi
+# Easier navigation: .., ..., ...., .....
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias .....="cd ../../../.."
 
 alias cls='clear' # Good 'ol Clear Screen command
 

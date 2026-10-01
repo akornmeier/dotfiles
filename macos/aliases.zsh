@@ -1,6 +1,5 @@
-# Easier navigation: .., ..., ...., .....
+[[ "$OSTYPE" == darwin* ]] || return
 
-alias ..="cd .."
-alias ...="cd ../.."
-alias ....="cd ../../.."
-alias .....="cd ../../../.."
+# Flush DNS Cache
+alias dnsflush='dscacheutil -flushcache; sudo killall -HUP mDNSResponder'
+alias hosts='code /private/etc/hosts'

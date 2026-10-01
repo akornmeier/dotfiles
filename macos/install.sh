@@ -2,9 +2,10 @@
 #
 # macOS-specific installation tasks
 
-# Exit if not on macOS
+# Skip if not on macOS. `return` because bin/dot sources this file; `exit`
+# would end the whole dot run.
 if test ! "$(uname)" = "Darwin"; then
-  exit 0
+  return 0 2>/dev/null || exit 0
 fi
 
 echo "🔍 Checking for macOS updates..."

@@ -6,6 +6,11 @@
 # Sourced by bin/dot from cmd_install and cmd_update.
 # Reads $DOT_MODE (install|update) to branch upgrade behavior.
 
+# macOS only: on Omarchy herdr is a system package, so pacman owns its updates.
+if [ "$(uname -s)" != "Darwin" ]; then
+  return 0 2>/dev/null || exit 0
+fi
+
 echo ""
 echo "🐂 Setting up herdr..."
 
