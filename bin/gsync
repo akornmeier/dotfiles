@@ -9,6 +9,27 @@ git fetch --prune
 # Auto-detect default branch from remote
 default_branch=$(git remote show origin | grep 'HEAD branch' | awk '{print $NF}')
 current_branch=$(git branch --show-current)
+default_ref="refs/remotes/origin/$default_branch"
+git rev-parse --verify "$default_ref^{commit}" >/dev/null
+origin_url=$(git remote get-url origin)
+
+# Squash/rebase merges change commit IDs. Only trust a merged PR for this exact
+# local tip, from the same repo, whose merge commit reached origin's default branch.
+merged_pr_contains_tip() {
+  command -v gh >/dev/null 2>&1 || return 1
+  local branch=$1 tip=$2 prs head merge cross_repo
+  prs=$(gh pr list --repo "$origin_url" --state merged --base "$default_branch" \
+    --head "$branch" --json headRefOid,mergeCommit,isCrossRepository \
+    --jq '.[] | [.headRefOid, .mergeCommit.oid, .isCrossRepository] | @tsv' 2>/dev/null) || return 1
+
+  while IFS=$'\t' read -r head merge cross_repo; do
+    if [[ "$head" == "$tip" && "$cross_repo" == false && -n "$merge" ]] &&
+      git merge-base --is-ancestor "$merge" "$default_ref" 2>/dev/null; then
+      return 0
+    fi
+  done <<< "$prs"
+  return 1
+}
 
 if [[ "$current_branch" == "$default_branch" ]]; then
   git pull origin "$default_branch"
@@ -53,24 +74,25 @@ if [[ ${#stale_branches[@]} -gt 0 ]]; then
       continue
     fi
 
-    # Check for commits not merged into default branch
-    unmerged_count=$(git log "$default_branch..$branch" --oneline 2>/dev/null | wc -l | tr -d ' ')
+    tip=$(git rev-parse "refs/heads/$branch")
+    merged_reason=""
+    if git merge-base --is-ancestor "$tip" "$default_ref"; then
+      merged_reason="fully merged into origin/$default_branch"
+    elif [[ $(git rev-parse "$default_ref^{tree}") == "$(git rev-parse "$tip^{tree}")" ]]; then
+      merged_reason="content identical to origin/$default_branch"
+    elif merged_pr_contains_tip "$branch" "$tip"; then
+      merged_reason="exact branch tip merged via PR into origin/$default_branch"
+    fi
 
-    if [[ "$unmerged_count" -gt 0 ]]; then
-      echo "  ⚠ $branch has $unmerged_count commit(s) not in $default_branch"
-      read -p "    Delete anyway? [y/N] " -n 1 -r
-      echo
-      if [[ $REPLY =~ ^[Yy]$ ]]; then
-        git branch -D "$branch"
-        echo "    ✓ Force deleted"
-      else
-        echo "    ⏭ Skipped"
-      fi
-    elif git branch -d "$branch" 2>/dev/null; then
-      echo "  ✓ $branch (deleted - fully merged)"
+    if [[ -n "$merged_reason" ]]; then
+      # -d only understands ancestry and may check an upstream other than main.
+      # Our checks above also cover squash merges and a stale local main.
+      git branch -D "$branch"
+      echo "  ✓ $branch (deleted - $merged_reason)"
     else
-      echo "  ✗ $branch cannot be safely deleted (not fully merged)"
-      read -p "    Force delete? [y/N] " -n 1 -r
+      echo "  ⚠ $branch: Could not confirm these changes landed in origin/$default_branch"
+      REPLY=""
+      read -p "    Delete anyway? [y/N] " -n 1 -r || true
       echo
       if [[ $REPLY =~ ^[Yy]$ ]]; then
         git branch -D "$branch"

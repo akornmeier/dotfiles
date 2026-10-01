@@ -11,7 +11,8 @@
     "release": "changeset tag",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint": "oxlint ."
+    "lint": "oxlint .",
+    "test": "bash script/test-gsync"
   },
   "keywords": [
     "dotfiles",
