@@ -7,9 +7,11 @@
 #
 # Runtimes (node, pnpm, go, bun, uv, python) come from mise, see linux/mise.toml.
 #
-# macOS-only casks with no Linux build: claude (desktop), cmux, iterm2,
-# raycast (use the Omarchy menu), readdle-spark, supacode, mas apps.
-# tableplus is dropped: its AUR package fails to install.
+# macOS-only casks with no Linux build: claude (desktop), raycast (use the
+# Omarchy menu), readdle-spark, mas apps.
+#
+# Apps removed from the Brewfile in #65 (Ghostty, cmux, iTerm2, Supacode,
+# TablePlus) are not wanted on any OS, so they are not listed here either.
 
 # shell
 zsh
@@ -34,7 +36,6 @@ wget
 cursor-bin # AUR
 discord
 firefox
-ghostty
 google-chrome # AUR
 insomnia-bin # AUR
 spotify # AUR
