@@ -317,11 +317,6 @@ cmd_install() {
 		fi
 	fi
 
-	# Run iTerm2 installer
-	if [ -f "$DOTFILES/iterm2/install.sh" ]; then
-		DOT_MODE=install source "$DOTFILES/iterm2/install.sh"
-	fi
-
 	# Run herdr installer
 	if [ -f "$DOTFILES/herdr/install.sh" ]; then
 		DOT_MODE=install source "$DOTFILES/herdr/install.sh"
@@ -412,11 +407,6 @@ cmd_update() {
 	echo "🧹 Cleaning up Homebrew..."
 	brew cleanup
 	echo -e "  ${GREEN}✓ Cleanup complete${NC}"
-
-	# Run iTerm2 installer in update mode
-	if [ -f "$DOTFILES/iterm2/install.sh" ]; then
-		DOT_MODE=update source "$DOTFILES/iterm2/install.sh"
-	fi
 
 	# Run herdr installer in update mode
 	if [ -f "$DOTFILES/herdr/install.sh" ]; then
