@@ -1054,15 +1054,6 @@
           }
         }
       },
-      "tableplus": {
-        "version": "6.1.8,574",
-        "options": {
-          "full_name": "tableplus",
-          "args": {
-            "appdir": "/Applications"
-          }
-        }
-      },
       "todoist": {
         "version": "9.9.3",
         "options": {

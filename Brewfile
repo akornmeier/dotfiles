@@ -1,6 +1,5 @@
 cask_args appdir: '/Applications'
 
-tap 'manaflow-ai/cmux'
 tap 'oven-sh/bun'
 
 # gnu stuff
@@ -45,7 +44,6 @@ brew 'zsh' # UNIX shell (command interpreter)
 cask '1password' # Password manager
 cask 'claude' # AI programming friend
 cask 'claude-code@latest' # AI programming friend
-cask 'cmux' # Agentic-friendly terminal multiplexer
 cask 'codex' # Chad_100 in the CLI
 cask 'cursor' # Write, edit, and chat about your code with AI
 cask 'discord' # VoIP and chat app
@@ -53,16 +51,12 @@ cask 'docker-desktop' # Build containerised applications and microservices
 cask 'firefox' # Web browser
 cask 'font-fira-code-nerd-font' # Monospace font with programming ligatures
 cask 'font-jetbrains-mono-nerd-font' # Monospace font with programming ligatures
-cask 'ghostty' # Fast terminal
 cask 'google-chrome' # Web browser
 cask 'insomnia' # REST client
-cask 'iterm2' # Best terminal for agentic coding
 cask 'raycast' # Extendable launcher app
 cask 'readdle-spark' # Email client
 cask 'spotify' # Music streaming service
-cask 'supacode' # Worktree coding agents command center
 cask 'surfshark' # VPN client
-cask 'tableplus' # GUI for databases
 cask 'zed' # Code editor
 cask 'zoom' # Video conferencing software
 
