@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-This is a macOS dotfiles repository for managing development environment configuration. It uses a topic-based organization where each topic (zsh, git, macos, etc.) contains related configuration files and scripts.
+This is a macOS (and Omarchy Linux) dotfiles repository for managing development environment configuration. It uses a topic-based organization where each topic (zsh, git, macos, etc.) contains related configuration files and scripts.
 
 ## Core Commands
 
@@ -62,7 +62,11 @@ The repository is organized by "topics" (directories), where each topic contains
 - **bin/**: Executables added to `$PATH` (e.g., `dot`, `e`, `set-defaults`)
 - **zsh/**: Zsh configuration and Oh My Zsh setup
 - **git/**: Git configuration and aliases
-- **macos/**: macOS-specific settings and defaults
+- **macos/**: macOS-specific settings and defaults (`dot.sh`, `install.sh`, `set-defaults.sh`, `aliases.zsh`)
+- **linux/**: Omarchy/Arch setup (`dot.sh`, `packages` for yay, `mise.toml`, `omarchy.zsh`, `aliases.zsh`)
+
+Every `*.zsh` file is loaded on both OSes, so `macos/*.zsh` and `linux/*.zsh` must `return` early off their OS. Shared topics stay free of OS checks; OS differences live in the OS topics, plus one `$OSTYPE` block at the top of `zsh/zshrc.symlink` for what has to be set before Oh My Zsh loads.
+
 - **fnm/**: Fast Node Manager configuration
 - **claude/**: Claude Desktop and Claude Code MCP server configuration
 - **functions/**: Reusable shell functions
@@ -80,20 +84,20 @@ Files follow specific naming patterns with automatic behavior:
 
 ### The `dot` Script
 
-The main orchestration script (`bin/dot`) handles three modes:
+The main orchestration script (`bin/dot`) handles three modes. It checks `uname -s` once and sources `macos/dot.sh` or `linux/dot.sh`, which define the OS steps it calls: `os_bootstrap`, `os_install`, `os_configure`, `os_update`, plus `os_git_credential` and `os_links`. Unsupported OSes fail immediately. Add OS-specific steps to those files, not to `bin/dot`.
 
 1. **`bootstrap`**: First-time setup
    - Sets up Git configuration (name/email)
    - Creates symlinks for dotfiles
-   - Installs Homebrew if missing
+   - Installs Homebrew if missing (Linux: checks for yay)
    - Prompts to continue with full installation
 
 2. **`install`**: Full installation
    - Updates symlinks
-   - Installs all Brewfile packages
-   - Runs topic installers (macos, fnm, zsh, tmux)
+   - Installs all Brewfile packages (Linux: `linux/packages` and mise tools)
+   - Runs topic installers (macos, fnm, herdr, zsh, tmux)
    - Configures Claude Desktop/Code MCP servers (if installed)
-   - Applies macOS system defaults
+   - Applies macOS system defaults (Linux: switches the login shell to zsh)
 
 3. **`update`** (default): Smart updates
    - Only updates changed symlinks
@@ -101,18 +105,22 @@ The main orchestration script (`bin/dot`) handles three modes:
    - Upgrades outdated packages only
    - Installs missing Brewfile packages
    - Removes Homebrew's Node (replaced by FNM)
+   - Linux: installs missing `linux/packages` and runs `mise upgrade`; system upgrades stay with `omarchy-update`
 
 ### Symlink Management
 
 Symlinks are created automatically from `*.symlink` files:
 
 - Files are linked from topics into `$HOME`
+- Links that don't fit the `~/.name` pattern (e.g. Linux's `~/.config/mise/config.toml`) are listed in the OS file's `os_links`
 - The script handles conflicts (skip, overwrite, backup)
 - Only changed symlinks are updated during `dot update`
 
 ### Node.js Management
 
-Uses FNM (Fast Node Manager) instead of nvm:
+On macOS, uses FNM (Fast Node Manager) instead of nvm. On Linux, mise (Omarchy's version manager) manages Node and the other runtimes from `linux/mise.toml`.
+
+FNM on macOS:
 
 - Node binaries are symlinked to `/usr/local/bin` for system-wide access
 - This enables GUI apps and MCP servers to use Node
@@ -143,7 +151,7 @@ FNM is preferred over Homebrew's Node:
 
 - `macos/install.sh`: Checks for macOS updates during installation
 - `macos/set-defaults.sh`: Applies system preferences (requires sudo)
-- Both scripts are run during `dot install`
+- Both scripts are run during `dot install`, from `macos/dot.sh`
 
 ### herdr CLI
 
@@ -151,6 +159,7 @@ The `herdr/` topic installs the `herdr` CLI (terminal workspace manager for AI c
 
 - Installed via `curl -fsSL https://herdr.dev/install.sh | sh` (binary lands in `~/.local/bin`; `system/path.zsh` adds that directory to `$PATH` for the user's zsh shell, so `herdr` is available in normal terminal use after a shell restart)
 - Detection uses `command -v herdr`
+- macOS only: on Omarchy herdr is a system package, so `herdr/install.sh` returns early and pacman handles updates
 - Runs in both `dot install` and `dot update`:
   - `dot install` (DOT_MODE=install): installs herdr if missing, otherwise skips
   - `dot update` (DOT_MODE=update): installs if missing, otherwise self-updates via the built-in `herdr update` command

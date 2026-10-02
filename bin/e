@@ -13,4 +13,8 @@
 #   $ e .
 #   $ e /usr/local
 #   # => opens the specified directory in your editor
-exec zed "${1:-.}"
+# Arch packages Zed as `zeditor`.
+if command -v zed >/dev/null; then
+  exec zed "${1:-.}"
+fi
+exec zeditor "${1:-.}"
