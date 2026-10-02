@@ -1,5 +1,17 @@
 # tk-dotfiles
 
+## 2.5.0
+
+### Minor Changes
+
+- 336edf4: Support Omarchy (Arch Linux): `dot` detects the OS and installs `linux/packages` with yay, manages runtimes with mise, and sets zsh up on top of Omarchy's defaults.
+
+### Patch Changes
+
+- 5a7ed05: Remove Ghostty, cmux (and its tap), iTerm2, Supacode, and TablePlus from the Brewfile, and drop the `iterm2/` topic installer (`it2` CLI) from `dot install` / `dot update`.
+- 7739d73: Make `gsync` cleanup squash-aware: check fetched origin history, identical file trees, and merged GitHub PRs matching the exact local tip. Keep confirmation when merge status is uncertain, and retain branches on end-of-input.
+- 83ef298: Put zsh-autocomplete's completions on `fpath` before Oh My Zsh runs `compinit`, so its completion helpers are defined.
+
 ## 2.4.2
 
 ### Patch Changes
