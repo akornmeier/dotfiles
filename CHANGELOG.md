@@ -1,5 +1,11 @@
 # tk-dotfiles
 
+## 2.5.2
+
+### Patch Changes
+
+- af8060d: Move to pnpm 12 and upgrade corepack during install so pnpm 12 runs on Node 22
+
 ## 2.5.1
 
 ### Patch Changes
