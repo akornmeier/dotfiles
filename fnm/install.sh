@@ -31,6 +31,10 @@ fnm default lts-latest
 
 echo " Installed Node.js $(fnm current)"
 
+# Node's bundled corepack lags behind pnpm (e.g. Node 22's 0.34 can't run
+# pnpm >= 11), so upgrade it in the default Node install.
+npm install -g corepack@latest
+
 # Best-effort cleanup of legacy symlinks from earlier versions of this script.
 # Only removes them if they still point at the FNM default alias, so we don't
 # clobber a user-installed node.
