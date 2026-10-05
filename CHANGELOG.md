@@ -1,5 +1,11 @@
 # tk-dotfiles
 
+## 2.5.1
+
+### Patch Changes
+
+- abd160d: Update dependency versions
+
 ## 2.5.0
 
 ### Minor Changes
