@@ -1,5 +1,5 @@
+# PNPM_HOME is set per OS at the top of zsh/zshrc.symlink.
 # pnpm
-export PNPM_HOME="$HOME/Library/pnpm"
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;

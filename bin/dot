@@ -53,8 +53,8 @@ displayUsageAndExit() {
 	echo "Usage: dot [command] [options]"
 	echo ""
 	echo "Commands:"
-	echo "  bootstrap     First-time setup (gitconfig, symlinks, Homebrew)"
-	echo "  install       Full installation (Homebrew packages, configs, macOS defaults)"
+	echo "  bootstrap     First-time setup (gitconfig, symlinks, package manager)"
+	echo "  install       Full installation (packages, configs, OS defaults)"
 	echo "  update        Smart updates (default - only update what's needed)"
 	echo ""
 	echo "Options:"
@@ -87,10 +87,7 @@ setup_gitconfig () {
 		echo "📝 Setting up Git configuration..."
 		echo ""
 
-		git_credential='cache'
-		if [ "$(uname -s)" == "Darwin" ]; then
-			git_credential='osxkeychain'
-		fi
+		git_credential="$os_git_credential"
 
 		user ' - What is your GitHub author name?'
 		read -e git_authorname
@@ -185,8 +182,16 @@ install_dotfiles () {
 	local linked_count=0
 	local skipped_count=0
 
+	# "src dst" pairs: every *.symlink -> ~/.name, then the OS's extra links
+	local links=() src dst i
 	for src in $(find -H "$DOTFILES" -maxdepth 2 -name '*.symlink' -not -path '*.git*'); do
-		dst="$HOME/.$(basename "${src%.*}")"
+		links+=("$src" "$HOME/.$(basename "${src%.*}")")
+	done
+	links+=("${os_links[@]}")
+
+	for ((i = 0; i < ${#links[@]}; i += 2)); do
+		src="${links[i]}" dst="${links[i + 1]}"
+		mkdir -p "$(dirname "$dst")"
 
 		# Check if symlink already exists and is correct
 		if [ -L "$dst" ] && [ "$(readlink $dst)" == "$src" ]; then
@@ -216,17 +221,7 @@ cmd_bootstrap() {
 
 	setup_gitconfig
 	install_dotfiles false
-
-	echo ""
-	echo "🍺 Checking for Homebrew..."
-	if command -v brew &> /dev/null; then
-		echo -e "  ${GREEN}✓ Homebrew is already installed${NC}"
-	else
-		echo ""
-		echo "  Installing Homebrew..."
-		/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-		echo -e "  ${GREEN}✓ Homebrew installed${NC}"
-	fi
+	os_bootstrap
 
 	echo ""
 	echo -e "${GREEN}✨ Bootstrap complete!${NC}"
@@ -255,67 +250,12 @@ cmd_install() {
 	# Ensure symlinks are up to date
 	install_dotfiles true
 
-	echo ""
-	echo "🍺 Installing Homebrew packages..."
-	echo ""
-	cd "$DOTFILES"
-	brew bundle install
-	echo -e "  ${GREEN}✓ Homebrew packages installed${NC}"
+	os_install
 
 	echo ""
 	echo "============================================================"
 	echo -e "${BLUE}⚙️  Running installer scripts...${NC}"
 	echo "============================================================"
-
-	# Run macOS installer first
-	if [ -f "$DOTFILES/macos/install.sh" ]; then
-		source "$DOTFILES/macos/install.sh"
-	fi
-
-	# Run FNM installer
-	if [ -f "$DOTFILES/fnm/install.sh" ]; then
-		echo ""
-		echo -e "${BLUE}🔧 Setting up FNM and Node.js...${NC}"
-
-		# Set up FNM environment
-		eval "$(fnm env --use-on-cd --version-file-strategy=recursive --corepack-enabled --shell bash)"
-
-		# Check if LTS is already installed and set as default
-		CURRENT_NODE=$(fnm current 2>/dev/null || echo "none")
-		if fnm list | grep -q "lts-latest" && [ "$CURRENT_NODE" != "none" ]; then
-			echo -e "  ${GREEN}✓ Node.js LTS already installed: $CURRENT_NODE${NC}"
-		else
-			echo ""
-			echo "  Installing latest Node.js LTS version..."
-			fnm install --lts
-			fnm default lts-latest
-			echo -e "  ${GREEN}✓ Installed Node.js $(fnm current)${NC}"
-		fi
-
-		echo -e "  ${YELLOW}- 📦 node: $(node --version)${NC}"
-		echo -e "  ${YELLOW}- 📦 npm: $(npm --version)${NC}"
-		echo -e "  ${YELLOW}- 📦 npx: $(npx --version)${NC}"
-		echo -e "  ${YELLOW}- 📦 corepack: $(corepack --version)${NC}"
-		echo -e "  ${GREEN}✓ FNM setup complete!${NC}"
-
-		# Install npm global packages (add packages to NPM_GLOBALS array as needed)
-		NPM_GLOBALS=(
-			# Add global packages here, e.g.: "package-name"
-		)
-		if [ ${#NPM_GLOBALS[@]} -gt 0 ]; then
-			echo ""
-			echo -e "${BLUE}📦 Installing npm global packages...${NC}"
-			for pkg in "${NPM_GLOBALS[@]}"; do
-				if npm list -g "$pkg" &>/dev/null; then
-					echo -e "  ${GREEN}✓ $pkg already installed${NC}"
-				else
-					echo "  Installing $pkg..."
-					npm install -g "$pkg"
-					echo -e "  ${GREEN}✓ $pkg installed${NC}"
-				fi
-			done
-		fi
-	fi
 
 	# Run herdr installer
 	if [ -f "$DOTFILES/herdr/install.sh" ]; then
@@ -332,17 +272,7 @@ cmd_install() {
 		source "$DOTFILES/tmux/install.sh"
 	fi
 
-	# Set macOS defaults
-	if [ -f "$DOTFILES/macos/set-defaults.sh" ]; then
-		echo ""
-		echo "============================================================"
-		echo -e "${BLUE}🍏 Configuring macOS defaults...${NC}"
-		echo "============================================================"
-
-		ensure_sudo
-
-		source "$DOTFILES/macos/set-defaults.sh"
-	fi
+	os_configure
 
 	echo ""
 	echo "============================================================"
@@ -366,47 +296,7 @@ cmd_update() {
 	# Check and update symlinks
 	install_dotfiles true
 
-	echo ""
-	echo "============================================================"
-	echo -e "${BLUE}🍺 Updating Homebrew...${NC}"
-	echo "============================================================"
-
-	echo ""
-	echo "🔍 Checking for Homebrew updates..."
-	echo ""
-	brew update
-	echo -e "  ${GREEN}✓ Homebrew updated${NC}"
-
-	echo ""
-	echo "📦 Checking for package updates..."
-	# Check if there are any outdated packages before upgrading
-	OUTDATED=$(brew outdated)
-	if [ -n "$OUTDATED" ]; then
-		echo "$OUTDATED" | sed 's/^/  /'
-		echo ""
-		brew upgrade
-		echo -e "  ${GREEN}✓ Packages upgraded${NC}"
-	else
-		echo -e "  ${GREEN}✓ All packages are up to date${NC}"
-	fi
-
-	echo ""
-	echo "📦 Checking Brewfile for missing packages..."
-	cd "$DOTFILES"
-	# Use brew bundle check to see if anything is missing
-	if ! brew bundle check &>/dev/null; then
-		echo ""
-		echo "  Installing missing packages..."
-		brew bundle install
-		echo -e "  ${GREEN}✓ Missing packages installed${NC}"
-	else
-		echo -e "  ${GREEN}✓ All Brewfile packages are installed${NC}"
-	fi
-
-	echo ""
-	echo "🧹 Cleaning up Homebrew..."
-	brew cleanup
-	echo -e "  ${GREEN}✓ Cleanup complete${NC}"
+	os_update
 
 	# Run herdr installer in update mode
 	if [ -f "$DOTFILES/herdr/install.sh" ]; then
@@ -458,6 +348,13 @@ cmd_update() {
 	echo -e "  💡 Run ${YELLOW}'dot'${NC} or ${YELLOW}'dot update'${NC} periodically to keep things up-to-date."
 	echo ""
 }
+
+# OS-specific steps: see macos/dot.sh for the interface
+case "$(uname -s)" in
+	Darwin) source "$DOTFILES/macos/dot.sh" ;;
+	Linux) source "$DOTFILES/linux/dot.sh" ;;
+	*) fail "Unsupported OS: $(uname -s)" ;;
+esac
 
 # Main command dispatcher
 main() {

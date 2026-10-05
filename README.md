@@ -134,6 +134,19 @@ On subsequent runs, if everything is already configured, you may not be prompted
 - Lungo (Prevents Sleep)
 - Magnet (Window Manager)
 
+### Linux (Omarchy)
+
+The same repo installs on [Omarchy](https://omarchy.org) (Arch + Hyprland). `dot` checks `uname` and runs the steps in `linux/dot.sh` instead of `macos/dot.sh`. On Linux it:
+
+- Installs `linux/packages` with `yay` (the Linux counterpart of the `Brewfile`)
+- Uses **mise** instead of fnm, pyenv and Homebrew runtimes. Global tools live in `linux/mise.toml`, which is linked to `~/.config/mise/config.toml`
+- Links `tmux/tmux.conf.symlink` over Omarchy's `~/.config/tmux/tmux.conf`
+- Switches the login shell to zsh. `linux/omarchy.zsh` sources Omarchy's bash env, aliases and helpers so they keep working in zsh. It keeps `c` as the project jumper and maps `pbcopy`/`pbpaste` to `wl-copy`/`wl-paste`
+- Skips the macOS defaults and the Homebrew and herdr installers. herdr is a pacman package on Omarchy
+- Leaves out the apps removed from the Brewfile (Ghostty, cmux, iTerm2, Supacode, TablePlus); they aren't installed on either OS
+
+System upgrades stay with `omarchy-update`. On Linux, `dot update` only installs missing packages and upgrades the mise tools.
+
 ## Keeping Things Up-to-Date
 
 The unified `dot` command provides intelligent management for your dotfiles:

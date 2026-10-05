@@ -2,11 +2,13 @@
 alias l='ls -l'
 alias reload='source ~/.zshrc'
 
-# Flush DNS Cache
-alias dnsflush='dscacheutil -flushcache; sudo killall -HUP mDNSResponder'
+# Easier navigation: .., ..., ...., .....
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias .....="cd ../../../.."
 
 alias cls='clear' # Good 'ol Clear Screen command
-alias hosts='code /private/etc/hosts'
 
 # Kill all the tabs in Chrome to free up memory
 # [C] explained: http://www.commandlinefu.com/commands/view/402/exclude-grep-from-your-grepped-output-of-ps-alias-included-in-description
