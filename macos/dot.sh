@@ -53,6 +53,10 @@ os_install() {
 		echo -e "  ${GREEN}✓ Installed Node.js $(fnm current)${NC}"
 	fi
 
+	# Node's bundled corepack lags behind pnpm (e.g. Node 22's 0.34 can't run
+	# pnpm >= 11), so upgrade it in the default Node install.
+	npm install -g corepack@latest
+
 	echo -e "  ${YELLOW}- 📦 node: $(node --version)${NC}"
 	echo -e "  ${YELLOW}- 📦 npm: $(npm --version)${NC}"
 	echo -e "  ${YELLOW}- 📦 npx: $(npx --version)${NC}"
