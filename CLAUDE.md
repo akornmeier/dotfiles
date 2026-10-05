@@ -37,6 +37,9 @@ dot bootstrap
 # Full installation
 dot install
 
+# Uninstall Homebrew packages not in the Brewfile (macOS, asks first)
+dot cleanup
+
 # Open dotfiles in editor
 dot --edit
 ```
@@ -84,7 +87,7 @@ Files follow specific naming patterns with automatic behavior:
 
 ### The `dot` Script
 
-The main orchestration script (`bin/dot`) handles three modes. It checks `uname -s` once and sources `macos/dot.sh` or `linux/dot.sh`, which define the OS steps it calls: `os_bootstrap`, `os_install`, `os_configure`, `os_update`, plus `os_git_credential` and `os_links`. Unsupported OSes fail immediately. Add OS-specific steps to those files, not to `bin/dot`.
+The main orchestration script (`bin/dot`) handles three modes. It checks `uname -s` once and sources `macos/dot.sh` or `linux/dot.sh`, which define the OS steps it calls: `os_bootstrap`, `os_install`, `os_configure`, `os_update`, `os_cleanup`, plus `os_git_credential` and `os_links`. Unsupported OSes fail immediately. Add OS-specific steps to those files, not to `bin/dot`.
 
 1. **`bootstrap`**: First-time setup
    - Sets up Git configuration (name/email)

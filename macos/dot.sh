@@ -8,6 +8,7 @@
 #   os_install         install packages and runtimes
 #   os_configure       apply system settings (last step of `dot install`)
 #   os_update          upgrade packages
+#   os_cleanup         uninstall packages no longer listed (`dot cleanup`)
 
 os_git_credential='osxkeychain'
 os_links=()
@@ -135,4 +136,25 @@ os_update() {
 	echo "🧹 Cleaning up Homebrew..."
 	brew cleanup
 	echo -e "  ${GREEN}✓ Cleanup complete${NC}"
+}
+
+os_cleanup() {
+	local brewfile="$DOTFILES/Brewfile"
+	echo ""
+	echo "🧹 Checking for packages not in the Brewfile..."
+	# Dry run exits 0 when there is nothing to remove
+	if brew bundle cleanup --file="$brewfile"; then
+		echo -e "  ${GREEN}✓ Nothing to remove${NC}"
+		return
+	fi
+	echo ""
+	user "Uninstall everything listed above? (y/n)"
+	read -n 1 confirm
+	echo ""
+	if [[ $confirm =~ ^[Yy]$ ]]; then
+		brew bundle cleanup --file="$brewfile" --force
+		echo -e "  ${GREEN}✓ Cleanup complete${NC}"
+	else
+		echo "  Skipped. Add anything you want to keep to the Brewfile."
+	fi
 }
