@@ -19,7 +19,7 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
         with:
-          # Need full history + tags so `changeset tag` skips versions already tagged
+          # Need full history + tags so `changeset git-tag` skips versions already tagged
           fetch-depth: 0
 
       - name: Setup pnpm
@@ -36,13 +36,14 @@ jobs:
 
       - name: Create Release Pull Request or Tag
         id: changesets
-        uses: changesets/action@v1
+        # v2 learns which tags were created from the NDJSON events the Changesets
+        # v3 CLI writes to $CHANGESETS_OUTPUT; v1 grepped stdout for "New tag:",
+        # which the v3 CLI no longer prints, so it never pushed tags or releases
+        uses: changesets/action@v2.1.2
         with:
-          version: pnpm run version
-          # `changeset tag` pushes a vX.Y.Z git tag; the action then cuts a
-          # GitHub Release from the matching CHANGELOG.md section
-          publish: pnpm run release
-          commit: 'chore: version packages'
-          title: 'chore: version packages'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          version-script: pnpm run version
+          # `changeset git-tag` creates a vX.Y.Z tag locally; the action pushes it
+          # and cuts a GitHub Release from the matching CHANGELOG.md section
+          publish-script: pnpm run release
+          commit-message: 'chore: version packages'
+          pr-title: 'chore: version packages'
