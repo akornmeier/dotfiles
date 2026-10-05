@@ -42,6 +42,10 @@ os_configure() {
 	fi
 }
 
+os_cleanup() {
+	fail "dot cleanup is macOS only"
+}
+
 os_update() {
 	linux_install_packages
 	echo ""

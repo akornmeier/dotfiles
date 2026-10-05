@@ -56,6 +56,7 @@ displayUsageAndExit() {
 	echo "  bootstrap     First-time setup (gitconfig, symlinks, package manager)"
 	echo "  install       Full installation (packages, configs, OS defaults)"
 	echo "  update        Smart updates (default - only update what's needed)"
+	echo "  cleanup       Uninstall Homebrew packages not in the Brewfile (asks first)"
 	echo ""
 	echo "Options:"
 	echo "  -e, --edit    Open dotfiles directory for editing"
@@ -376,6 +377,9 @@ main() {
 			;;
 		"update")
 			cmd_update
+			;;
+		"cleanup")
+			os_cleanup
 			;;
 		*)
 			# If unknown command, try to parse as option

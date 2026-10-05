@@ -156,6 +156,7 @@ dot              # Smart updates (default - only updates what's needed)
 dot update       # Same as above
 dot bootstrap    # First-time setup
 dot install      # Full installation
+dot cleanup      # Uninstall Homebrew packages not in the Brewfile (macOS)
 dot --edit       # Open dotfiles directory in your editor
 dot --help       # Show help
 ```
@@ -183,6 +184,10 @@ Full installation - useful after major changes or pulling updates:
 - 🤖 Configures Claude Desktop/Code MCP servers
 - 🍏 Applies macOS system defaults
 - 🔐 Only prompts for sudo when actually needed
+
+### `dot cleanup`
+
+macOS only. Lists formulae, casks, and taps installed but missing from the Brewfile, then asks before uninstalling them (`brew bundle cleanup --force`). Add anything you want to keep to the Brewfile first.
 
 ### `dot bootstrap`
 
