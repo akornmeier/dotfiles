@@ -8,7 +8,7 @@
     "changeset:add": "changeset add",
     "changeset:status": "changeset status",
     "version": "changeset version",
-    "release": "changeset tag",
+    "release": "changeset git-tag",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "oxlint .",
