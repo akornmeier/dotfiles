@@ -184,7 +184,8 @@ if [ ${#library_caches[@]} -gt 0 ]; then
 fi
 
 xdg_cache=${XDG_CACHE_HOME:-$HOME/.cache}
-collect_entries "$xdg_cache" 'uv'
+# Linux Homebrew keeps its cache here; `brew cleanup` handles it.
+collect_entries "$xdg_cache" 'uv' 'Homebrew'
 xdg_caches=(${entries[@]+"${entries[@]}"})
 if [ ${#xdg_caches[@]} -gt 0 ]; then
   tilde='~'
@@ -196,7 +197,7 @@ fi
 docker_note=""
 if command -v docker >/dev/null 2>&1; then
   if docker info >/dev/null 2>&1; then
-    reclaimable=$(docker system df --format '{{.Type}} {{.Reclaimable}}' 2>/dev/null | paste -sd ',' - | sed 's/,/, /g')
+    reclaimable=$(docker system df --format '{{.Type}} {{.Reclaimable}}' 2>/dev/null | grep -v '^Local Volumes' | paste -sd ',' - | sed 's/,/, /g')
     add_target "Docker unused images, containers, build cache (${reclaimable:-size unknown})" \
       "" "docker system prune -af"
   else
@@ -231,7 +232,11 @@ print_plan () {
 
 # Arrow-key checklist. Updates `selected`; returns 1 if the user quits.
 choose_targets () {
-  local n=${#labels[@]} cursor=0 i all key rest pointer box
+  local n=${#labels[@]} cursor=0 i all key rest pointer box width
+  # Rows must not wrap, or redrawing in place leaves stale lines behind.
+  width=$(stty size 2>/dev/null | awk '{print $2}')
+  width=$(( ${width:-80} - 19 ))
+  [ $width -lt 10 ] && width=10
   printf "  Space toggles, a selects all/none, enter clears the checked items, q quits.\n\n"
   printf '\033[?25l'
   trap 'printf "\033[?25h"' EXIT
@@ -243,7 +248,7 @@ choose_targets () {
     for ((i = 0; i < n; i++)); do
       pointer=' '; [ $i -eq $cursor ] && pointer='>'
       box='[ ]'; [ "${selected[$i]}" -eq 1 ] && box='[x]'
-      printf '\r\033[2K  %s %s %8s  %s\n' "$pointer" "$box" "$(size_label "$i")" "${labels[$i]}"
+      printf '\r\033[2K  %s %s %8s  %.*s\n' "$pointer" "$box" "$(size_label "$i")" "$width" "${labels[$i]}"
     done
     printf '\r\033[2K\n'
     printf '\r\033[2K  %8s  selected, %s free on disk now\n' "$(human "$(selected_kb)")" "$(human "$current_free_kb")"
