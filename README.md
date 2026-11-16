@@ -16,7 +16,7 @@ I use (Typescript/JavaScript, Node, Go, git, system libraries, and so on), so th
 
 Below is the general layout of my setup. Please review this _**before**_ running the install scripts.
 
-- **bin/**: Anything in `bin/` will be added to your `$PATH` and available everywhere. Includes `dot` (dotfiles manager), `e` (editor launcher), and `claude-agents` (multi-pane tmux launcher for Claude Code agents).
+- **bin/**: Anything in `bin/` will be added to your `$PATH` and available everywhere. Includes `dot` (dotfiles manager), `e` (editor launcher), `claude-agents` (multi-pane tmux launcher for Claude Code agents), and `clear-caches` (frees disk space by clearing rebuildable caches; `-n` previews; pick what to clear from a checklist).
 - **Brewfile**: Manages three types of applications:
   1. Brew Tap - service level tasks
   2. Brew formulas - command-line tools and packages

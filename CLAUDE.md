@@ -203,6 +203,7 @@ The `claude/` topic configures Model Context Protocol (MCP) servers for Claude D
   - `dot`: Main dotfiles management command
   - `e`: Quick editor launcher (opens in Zed)
   - `set-defaults`: Applies macOS system defaults
+  - `clear-caches`: Frees disk space by clearing rebuildable caches (Homebrew, pnpm/npm/uv/Go/Cargo, `~/Library/Caches`, `~/.cache`, unused Docker data). `-n` previews; pick what to clear from a checklist
 
 ## Testing Changes
 

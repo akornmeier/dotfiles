@@ -1,0 +1,326 @@
+#!/usr/bin/env bash
+#
+# clear-caches
+#
+# Frees disk space by clearing caches that tools rebuild on their own:
+# package manager caches, build caches, app and browser caches, and unused
+# Docker data. Shows what it found with sizes as a checklist, so you pick what
+# goes before anything is deleted.
+#
+# Left alone on purpose: Apple's own caches (com.apple.*), Playwright browsers
+# (they don't re-download by themselves), Docker volumes, the Trash, and
+# installed Node versions.
+
+# Commands are stored in single quotes and expanded later by eval.
+# shellcheck disable=SC2016
+
+set -uo pipefail
+shopt -s nullglob dotglob
+
+info () {
+  printf "\r  [ \033[00;34m..\033[0m ] %s\n" "$1"
+}
+
+success () {
+  printf "\r\033[2K  [ \033[00;32mOK\033[0m ] %s\n" "$1"
+}
+
+warn () {
+  printf "\r\033[2K  [ \033[0;33m!!\033[0m ] %s\n" "$1"
+}
+
+usage () {
+  echo "clear-caches -- free disk space by clearing rebuildable caches"
+  echo ""
+  echo "Usage: clear-caches [options]"
+  echo ""
+  echo "Options:"
+  echo "  -n, --dry-run   Show what would be cleared, delete nothing"
+  echo "  -y, --yes       Clear everything without asking"
+  echo "  -h, --help      Show this help message and exit"
+  exit "${1:-0}"
+}
+
+DRY_RUN=0
+ASSUME_YES=0
+for arg in "$@"; do
+  case "$arg" in
+    -n|--dry-run) DRY_RUN=1 ;;
+    -y|--yes) ASSUME_YES=1 ;;
+    -h|--help) usage ;;
+    *) echo "Unknown option: $arg"; echo ""; usage 1 ;;
+  esac
+done
+
+if [ -z "${HOME:-}" ] || [ ! -d "$HOME" ]; then
+  echo "HOME is not set to a directory" >&2
+  exit 1
+fi
+
+# Run from $HOME so corepack doesn't pick up a project's packageManager pin.
+cd "$HOME" || exit 1
+
+# Total size in KB of the paths that exist.
+size_kb () {
+  local existing=() p
+  for p in "$@"; do
+    [ -e "$p" ] && existing+=("$p")
+  done
+  [ ${#existing[@]} -eq 0 ] && { echo 0; return; }
+  du -sck "${existing[@]}" 2>/dev/null | tail -1 | awk '{print $1}'
+}
+
+human () {
+  awk -v kb="$1" 'BEGIN {
+    split("K M G T", u, " "); i = 1; s = kb
+    while (s >= 1024 && i < 4) { s /= 1024; i++ }
+    printf (i == 1 ? "%d%s" : "%.1f%s"), s, u[i]
+  }'
+}
+
+free_kb () {
+  df -k "$HOME" | awk 'NR == 2 {print $4}'
+}
+
+# Each target is a label, a size in KB ("" when unknown), and a command.
+labels=()
+sizes=()
+commands=()
+
+add_target () {
+  [ "$2" = "0" ] && return 0
+  labels+=("$1")
+  sizes+=("$2")
+  commands+=("$3")
+}
+
+# Entries of a cache directory, skipping names that match the keep patterns.
+# Sets the global array `entries`.
+collect_entries () {
+  local dir=$1 path name pattern keep
+  shift
+  entries=()
+  [ -d "$dir" ] || return 0
+  for path in "$dir"/*; do
+    name=${path##*/}
+    keep=0
+    for pattern in "$@"; do
+      # shellcheck disable=SC2053 # $pattern is a glob on purpose
+      [[ $name == $pattern ]] && { keep=1; break; }
+    done
+    [ $keep -eq 0 ] && entries+=("$path")
+  done
+}
+
+# Tool-managed caches: let each tool clear its own.
+
+if command -v brew >/dev/null 2>&1; then
+  add_target "Homebrew downloads and old versions" \
+    "$(size_kb "$(brew --cache)")" "brew cleanup --prune=all -s"
+fi
+
+if command -v pnpm >/dev/null 2>&1; then
+  pnpm_store=$(pnpm store path 2>/dev/null || true)
+  if [ -n "$pnpm_store" ] && [ -d "$pnpm_store" ]; then
+    add_target "pnpm store, unreferenced packages (size is the whole store)" \
+      "$(size_kb "$pnpm_store")" "pnpm store prune"
+
+    # Each pnpm major bump starts a new store (v3, v10, v11, ...) and leaves
+    # the old one behind. An older pnpm refills its store if it runs again.
+    old_pnpm_stores=()
+    for path in "${pnpm_store%/*}"/v*; do
+      [ "$path" != "$pnpm_store" ] && [ -d "$path" ] && old_pnpm_stores+=("$path")
+    done
+    if [ ${#old_pnpm_stores[@]} -gt 0 ]; then
+      add_target "Old pnpm stores ($(for p in "${old_pnpm_stores[@]}"; do printf '%s ' "${p##*/}"; done | sed 's/ $//'))" \
+        "$(size_kb "${old_pnpm_stores[@]}")" 'rm -rf "${old_pnpm_stores[@]}"'
+    fi
+  fi
+fi
+
+if command -v npm >/dev/null 2>&1 && [ -d "$HOME/.npm/_cacache" ]; then
+  add_target "npm cache" "$(size_kb "$HOME/.npm/_cacache")" "npm cache clean --force"
+fi
+
+if command -v uv >/dev/null 2>&1; then
+  uv_cache=$(uv cache dir 2>/dev/null || true)
+  if [ -n "$uv_cache" ] && [ -d "$uv_cache" ]; then
+    add_target "uv cache" "$(size_kb "$uv_cache")" "uv cache clean"
+  fi
+fi
+
+if command -v go >/dev/null 2>&1; then
+  go_mod=$(go env GOMODCACHE 2>/dev/null || true)
+  if [ -n "$go_mod" ] && [ -d "$go_mod" ]; then
+    add_target "Go module cache" "$(size_kb "$go_mod")" "go clean -modcache"
+  fi
+fi
+
+# Plain directories that tools re-download or rebuild on their own.
+
+cargo_home=${CARGO_HOME:-$HOME/.cargo}
+cargo_dirs=("$cargo_home/registry/cache" "$cargo_home/registry/src" "$cargo_home/git/checkouts")
+cargo_kb=$(size_kb "${cargo_dirs[@]}")
+if [ "$cargo_kb" -gt 0 ]; then
+  add_target "Cargo registry and git checkouts" "$cargo_kb" 'rm -rf "${cargo_dirs[@]}"'
+fi
+
+if [ -d "$HOME/.gradle/caches" ]; then
+  add_target "Gradle caches" "$(size_kb "$HOME/.gradle/caches")" 'rm -rf "$HOME/.gradle/caches"'
+fi
+
+derived_data="$HOME/Library/Developer/Xcode/DerivedData"
+if [ -d "$derived_data" ]; then
+  add_target "Xcode DerivedData" "$(size_kb "$derived_data")" 'rm -rf "$derived_data"'
+fi
+
+# Apple's caches are in use by the system; Homebrew and Playwright are handled
+# elsewhere or don't come back on their own.
+collect_entries "$HOME/Library/Caches" 'com.apple.*' 'Homebrew' 'ms-playwright' 'org.webkit.Playwright'
+library_caches=(${entries[@]+"${entries[@]}"})
+if [ ${#library_caches[@]} -gt 0 ]; then
+  add_target "App and browser caches (~/Library/Caches)" \
+    "$(size_kb "${library_caches[@]}")" 'rm -rf "${library_caches[@]}"'
+fi
+
+xdg_cache=${XDG_CACHE_HOME:-$HOME/.cache}
+collect_entries "$xdg_cache" 'uv'
+xdg_caches=(${entries[@]+"${entries[@]}"})
+if [ ${#xdg_caches[@]} -gt 0 ]; then
+  tilde='~'
+  add_target "Tool caches (${xdg_cache/#$HOME/$tilde})" \
+    "$(size_kb "${xdg_caches[@]}")" 'rm -rf "${xdg_caches[@]}"'
+fi
+
+# Docker: stopped containers, unused images, networks and build cache. Volumes stay.
+docker_note=""
+if command -v docker >/dev/null 2>&1; then
+  if docker info >/dev/null 2>&1; then
+    reclaimable=$(docker system df --format '{{.Type}} {{.Reclaimable}}' 2>/dev/null | paste -sd ',' - | sed 's/,/, /g')
+    add_target "Docker unused images, containers, build cache (${reclaimable:-size unknown})" \
+      "" "docker system prune -af"
+  else
+    docker_note="Docker isn't running. Start it and re-run to prune unused images and build cache."
+  fi
+fi
+
+# Pick what to clear.
+
+size_label () {
+  if [ -n "${sizes[$1]}" ]; then human "${sizes[$1]}"; else echo "-"; fi
+}
+
+# Sum of the measured sizes of the selected targets, in KB.
+selected_kb () {
+  local i total=0
+  for i in "${!labels[@]}"; do
+    [ "${selected[$i]}" -eq 1 ] && [ -n "${sizes[$i]}" ] && total=$((total + sizes[i]))
+  done
+  echo "$total"
+}
+
+print_plan () {
+  local i
+  for i in "${!labels[@]}"; do
+    printf "  %8s  %s\n" "$(size_label "$i")" "${labels[$i]}"
+  done
+  echo ""
+  printf "  %8s  total measured, %s free on disk now\n" "$(human "$(selected_kb)")" "$(human "$(free_kb)")"
+  echo ""
+}
+
+# Arrow-key checklist. Updates `selected`; returns 1 if the user quits.
+choose_targets () {
+  local n=${#labels[@]} cursor=0 i all key rest pointer box
+  printf "  Space toggles, a selects all/none, enter clears the checked items, q quits.\n\n"
+  printf '\033[?25l'
+  trap 'printf "\033[?25h"' EXIT
+  trap 'printf "\033[?25h\n"; exit 130' INT
+  local drawn=0
+  while true; do
+    [ $drawn -eq 1 ] && printf '\033[%dA' "$((n + 2))"
+    drawn=1
+    for ((i = 0; i < n; i++)); do
+      pointer=' '; [ $i -eq $cursor ] && pointer='>'
+      box='[ ]'; [ "${selected[$i]}" -eq 1 ] && box='[x]'
+      printf '\r\033[2K  %s %s %8s  %s\n' "$pointer" "$box" "$(size_label "$i")" "${labels[$i]}"
+    done
+    printf '\r\033[2K\n'
+    printf '\r\033[2K  %8s  selected, %s free on disk now\n' "$(human "$(selected_kb)")" "$(human "$current_free_kb")"
+
+    IFS= read -rsn1 key
+    case "$key" in
+      $'\033')
+        IFS= read -rsn2 rest
+        case "$rest" in
+          '[A') cursor=$(( (cursor + n - 1) % n )) ;;
+          '[B') cursor=$(( (cursor + 1) % n )) ;;
+        esac ;;
+      k) cursor=$(( (cursor + n - 1) % n )) ;;
+      j) cursor=$(( (cursor + 1) % n )) ;;
+      ' ') selected[cursor]=$(( 1 - selected[cursor] )) ;;
+      a)
+        all=1
+        for ((i = 0; i < n; i++)); do [ "${selected[$i]}" -eq 0 ] && all=0; done
+        for ((i = 0; i < n; i++)); do selected[i]=$(( 1 - all )); done ;;
+      q|Q) printf '\033[?25h\n'; return 1 ;;
+      '') break ;;
+    esac
+  done
+  printf '\033[?25h\n'
+}
+
+echo ""
+if [ ${#labels[@]} -eq 0 ]; then
+  info "No caches found to clear"
+  [ -n "$docker_note" ] && warn "$docker_note"
+  exit 0
+fi
+[ -n "$docker_note" ] && { warn "$docker_note"; echo ""; }
+
+# Everything starts checked.
+selected=()
+for i in "${!labels[@]}"; do selected[i]=1; done
+
+if [ $DRY_RUN -eq 1 ] || [ $ASSUME_YES -eq 1 ] || [ ! -t 0 ] || [ ! -t 1 ]; then
+  print_plan
+  if [ $DRY_RUN -eq 1 ]; then
+    info "Dry run, nothing deleted"
+    exit 0
+  fi
+  if [ $ASSUME_YES -eq 0 ]; then
+    read -r -p "  Clear all of the above? [y/N] " answer
+    case "$answer" in
+      [yY]|[yY][eE][sS]) ;;
+      *) info "Nothing deleted"; exit 0 ;;
+    esac
+    echo ""
+  fi
+else
+  current_free_kb=$(free_kb)
+  choose_targets || { info "Nothing deleted"; exit 0; }
+  any=0
+  for i in "${!labels[@]}"; do [ "${selected[$i]}" -eq 1 ] && any=1; done
+  if [ $any -eq 0 ]; then
+    info "Nothing selected, nothing deleted"
+    exit 0
+  fi
+fi
+
+before_kb=$(free_kb)
+for i in "${!labels[@]}"; do
+  [ "${selected[$i]}" -eq 1 ] || continue
+  info "Clearing ${labels[$i]}"
+  if eval "${commands[$i]}" >/dev/null 2>&1; then
+    success "Cleared ${labels[$i]}"
+  else
+    # rm still removes what it can when a file is locked or in use.
+    warn "Some of ${labels[$i]} couldn't be cleared"
+  fi
+done
+
+after_kb=$(free_kb)
+freed_kb=$((after_kb - before_kb))
+[ $freed_kb -lt 0 ] && freed_kb=0
+echo ""
+success "Freed $(human "$freed_kb"), $(human "$after_kb") free now"
