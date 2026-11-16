@@ -232,10 +232,11 @@ print_plan () {
 
 # Arrow-key checklist. Updates `selected`; returns 1 if the user quits.
 choose_targets () {
-  local n=${#labels[@]} cursor=0 i all key rest pointer box width
+  local n=${#labels[@]} cursor=0 i all key rest pointer box cols width footer
   # Rows must not wrap, or redrawing in place leaves stale lines behind.
-  width=$(stty size 2>/dev/null | awk '{print $2}')
-  width=$(( ${width:-80} - 19 ))
+  cols=$(stty size 2>/dev/null | awk '{print $2}')
+  cols=${cols:-80}
+  width=$(( cols - 19 ))
   [ $width -lt 10 ] && width=10
   printf "  Space toggles, a selects all/none, enter clears the checked items, q quits.\n\n"
   printf '\033[?25l'
@@ -251,7 +252,8 @@ choose_targets () {
       printf '\r\033[2K  %s %s %8s  %.*s\n' "$pointer" "$box" "$(size_label "$i")" "$width" "${labels[$i]}"
     done
     printf '\r\033[2K\n'
-    printf '\r\033[2K  %8s  selected, %s free on disk now\n' "$(human "$(selected_kb)")" "$(human "$current_free_kb")"
+    footer=$(printf '  %8s  selected, %s free on disk now' "$(human "$(selected_kb)")" "$(human "$current_free_kb")")
+    printf '\r\033[2K%.*s\n' "$((cols - 1))" "$footer"
 
     IFS= read -rsn1 key
     case "$key" in
