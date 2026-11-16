@@ -16,7 +16,7 @@ I use (Typescript/JavaScript, Node, Go, git, system libraries, and so on), so th
 
 Below is the general layout of my setup. Please review this _**before**_ running the install scripts.
 
-- **bin/**: Anything in `bin/` will be added to your `$PATH` and available everywhere. Includes `dot` (dotfiles manager), `e` (editor launcher), and `claude-agents` (multi-pane tmux launcher for Claude Code agents).
+- **bin/**: Anything in `bin/` will be added to your `$PATH` and available everywhere. Includes `dot` (dotfiles manager), `e` (editor launcher), `claude-agents` (multi-pane tmux launcher for Claude Code agents), and `clear-caches` (frees disk space by clearing rebuildable caches; `-n` previews; pick what to clear from a checklist).
 - **Brewfile**: Manages three types of applications:
   1. Brew Tap - service level tasks
   2. Brew formulas - command-line tools and packages
@@ -156,6 +156,7 @@ dot              # Smart updates (default - only updates what's needed)
 dot update       # Same as above
 dot bootstrap    # First-time setup
 dot install      # Full installation
+dot cleanup      # Uninstall Homebrew packages not in the Brewfile (macOS)
 dot --edit       # Open dotfiles directory in your editor
 dot --help       # Show help
 ```
@@ -183,6 +184,10 @@ Full installation - useful after major changes or pulling updates:
 - 🤖 Configures Claude Desktop/Code MCP servers
 - 🍏 Applies macOS system defaults
 - 🔐 Only prompts for sudo when actually needed
+
+### `dot cleanup`
+
+macOS only. Lists formulae, casks, and taps installed but missing from the Brewfile, then asks before uninstalling them (`brew bundle cleanup --force`). Add anything you want to keep to the Brewfile first.
 
 ### `dot bootstrap`
 
