@@ -1,5 +1,17 @@
 # tk-dotfiles
 
+## 2.6.0
+
+### Minor Changes
+
+- 6119e78: Add `clear-caches` to free disk space by clearing rebuildable caches
+- 6119e78: Add `dot cleanup` to uninstall Homebrew packages not in the Brewfile
+
+### Patch Changes
+
+- b521b3d: Keep Linux Playwright browsers when `clear-caches` clears `~/.cache`
+- af8060d: Move to pnpm 12 and upgrade corepack during install so pnpm 12 runs on Node 22
+
 ## 2.5.1
 
 ### Patch Changes
