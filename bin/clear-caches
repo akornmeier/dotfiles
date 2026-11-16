@@ -184,8 +184,8 @@ if [ ${#library_caches[@]} -gt 0 ]; then
 fi
 
 xdg_cache=${XDG_CACHE_HOME:-$HOME/.cache}
-# Linux Homebrew keeps its cache here; `brew cleanup` handles it.
-collect_entries "$xdg_cache" 'uv' 'Homebrew'
+# Linux Homebrew and Playwright keep their files here; see above.
+collect_entries "$xdg_cache" 'uv' 'Homebrew' 'ms-playwright'
 xdg_caches=(${entries[@]+"${entries[@]}"})
 if [ ${#xdg_caches[@]} -gt 0 ]; then
   tilde='~'
